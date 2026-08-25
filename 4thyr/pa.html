@@ -3,597 +3,2355 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>PA — Predictive Analysis · 4th Year</title>
+
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+
 <style>
 :root {
-  --bg:#0a0a0a;--bg2:#111111;--bg3:#1a1a1a;--bg4:#222222;
-  --red:#e02020;--red2:#ff3333;--red3:#c01010;--red-dim:rgba(224,32,32,0.12);
-  --gold:#f5a623;--gold2:#ffc940;--gold-dim:rgba(245,166,35,0.12);--gold-border:rgba(245,166,35,0.35);
-  --teal:#2dd4bf;--teal-dim:rgba(45,212,191,0.1);--teal-border:rgba(45,212,191,0.35);
-  --purple:#a78bfa;--purple-dim:rgba(167,139,250,0.1);--purple-border:rgba(167,139,250,0.35);
-  --white:#f5f5f5;--white2:#cccccc;--white3:#888888;--white4:#555555;
-  --border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.12);
+  --bg:#0a0a0a;
+  --bg2:#111111;
+  --bg3:#1a1a1a;
+  --bg4:#222222;
+
+  --red:#e02020;
+  --red2:#ff3333;
+
+  --gold:#f5a623;
+  --gold2:#ffc940;
+  --gold-dim:rgba(245,166,35,0.12);
+  --gold-border:rgba(245,166,35,0.35);
+
+  --teal:#2dd4bf;
+  --teal-dim:rgba(45,212,191,0.1);
+  --teal-border:rgba(45,212,191,0.35);
+
+  --purple:#a78bfa;
+  --purple-dim:rgba(167,139,250,0.1);
+  --purple-border:rgba(167,139,250,0.35);
+
+  --white:#f5f5f5;
+  --white2:#cccccc;
+  --white3:#888888;
+  --white4:#555555;
+
+  --border:rgba(255,255,255,0.07);
+  --border2:rgba(255,255,255,0.12);
 }
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth}
-body{background:var(--bg);color:var(--white);font-family:'JetBrains Mono',monospace;min-height:100vh;overflow-x:hidden}
-body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");pointer-events:none;z-index:0;opacity:0.5}
 
-/* HEADER */
-.header{position:sticky;top:0;z-index:200;background:rgba(10,10,10,0.95);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);padding:0 1.5rem}
-.header-inner{max-width:1300px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;height:56px;gap:1rem}
-.logo{font-family:'Playfair Display',serif;font-size:1.2rem;color:var(--white);text-decoration:none}
-.logo span{color:var(--gold)}
-.nav-tabs{display:flex;gap:2px}
-.nav-tab{padding:6px 16px;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;border:none;background:transparent;color:var(--white3);cursor:pointer;border-radius:4px;transition:all .2s;font-family:'JetBrains Mono',monospace}
-.nav-tab:hover{color:var(--white2);background:var(--bg3)}
-.nav-tab.active{background:var(--bg3);color:var(--gold);border:1px solid var(--gold-border)}
-.back-link{font-size:10px;color:var(--white3);text-decoration:none;letter-spacing:0.08em;transition:color .2s;white-space:nowrap}
-.back-link:hover{color:var(--gold)}
+* {
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+}
 
-/* PAGES */
-.page{display:none;position:relative;z-index:1}
-.page.active{display:block}
+html {
+  scroll-behavior:smooth;
+}
 
-/* ===================== SLIDE VIEWER ===================== */
-.viewer-wrap{max-width:1300px;margin:0 auto;padding:1.5rem}
-.unit-tabs{display:flex;gap:8px;margin-bottom:1.5rem;flex-wrap:wrap}
-.unit-tab{padding:8px 20px;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;border:1px solid var(--border2);background:var(--bg2);color:var(--white3);cursor:pointer;border-radius:5px;transition:all .2s;font-family:'JetBrains Mono',monospace}
-.unit-tab:hover{border-color:var(--gold-border);color:var(--gold2)}
-.unit-tab.active{background:var(--gold-dim);border-color:var(--gold-border);color:var(--gold2)}
-.unit-tab.teal-tab.active{background:var(--teal-dim);border-color:var(--teal-border);color:var(--teal)}
-.unit-tab.purple-tab.active{background:var(--purple-dim);border-color:var(--purple-border);color:var(--purple)}
+body {
+  background:var(--bg);
+  color:var(--white);
+  font-family:'JetBrains Mono',monospace;
+  min-height:100vh;
+  overflow-x:hidden;
+}
 
-.slide-stage{background:var(--bg2);border:1px solid var(--border);border-radius:12px;overflow:hidden;position:relative}
-.slide-display{min-height:560px;display:flex;align-items:flex-start;justify-content:center;position:relative;padding:0}
+body::before {
+  content:'';
+  position:fixed;
+  inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events:none;
+  z-index:0;
+  opacity:.5;
+}
 
-/* Image slide (CNN) */
-.slide-img-wrap{width:100%;display:flex;justify-content:center;background:#0d0d0d;padding:20px 0}
-.slide-img-wrap img{max-height:580px;max-width:100%;object-fit:contain;border-radius:4px}
+/* ================= HEADER ================= */
 
-/* Text slide */
-.slide-text-inner{width:100%;padding:3rem 3.5rem;min-height:560px;display:flex;flex-direction:column;gap:1.2rem}
-.slide-unit-tag{font-size:9px;letter-spacing:0.18em;text-transform:uppercase;color:var(--white4);margin-bottom:.5rem}
-.slide-num{font-size:9px;letter-spacing:0.12em;color:var(--white4);margin-bottom:1rem}
-.slide-title{font-family:'Playfair Display',serif;font-size:1.8rem;font-weight:700;color:var(--white);line-height:1.2;margin-bottom:.8rem}
-.slide-title.gold{color:var(--gold)}
-.slide-title.teal{color:var(--teal)}
-.slide-body{font-size:13px;color:var(--white2);line-height:1.85;letter-spacing:0.02em}
-.slide-body p{margin-bottom:.7rem}
-.slide-body .arrow{color:var(--gold);font-weight:500}
-.slide-body .arrow2{color:var(--teal)}
-.slide-body strong{color:var(--white);font-weight:500}
-.slide-body em{color:var(--gold);font-style:normal}
-.slide-body .flow{display:flex;flex-wrap:wrap;gap:6px;margin:.8rem 0;align-items:center}
-.slide-body .flow-step{background:var(--bg3);border:1px solid var(--border2);border-radius:4px;padding:4px 10px;font-size:11px;color:var(--white2)}
-.slide-body .flow-arrow{color:var(--white4);font-size:11px}
-.slide-body ul{padding-left:1.2rem;margin:.4rem 0}
-.slide-body ul li{margin-bottom:.35rem}
-.slide-body .eg{background:var(--bg3);border-left:2px solid var(--gold);padding:.6rem 1rem;margin:.6rem 0;border-radius:0 4px 4px 0;font-size:12px;color:var(--white3)}
-.slide-body .eg2{border-left-color:var(--teal)}
+.header {
+  position:sticky;
+  top:0;
+  z-index:200;
+  background:rgba(10,10,10,.95);
+  backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--border);
+  padding:0 1.5rem;
+}
 
-/* table inside slides */
-.slide-table{width:100%;border-collapse:collapse;margin:.8rem 0;font-size:11px}
-.slide-table th{background:var(--bg4);color:var(--gold);padding:6px 10px;text-align:left;border:1px solid var(--border2);font-weight:500;letter-spacing:0.05em}
-.slide-table.teal th{color:var(--teal)}
-.slide-table td{padding:5px 10px;border:1px solid var(--border);color:var(--white2)}
-.slide-table tr:nth-child(even) td{background:rgba(255,255,255,0.02)}
+.header-inner {
+  max-width:1300px;
+  margin:0 auto;
+  height:56px;
 
-/* comparison grid */
-.compare-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:.8rem 0}
-.compare-col{background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:1rem}
-.compare-col h4{font-size:10px;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:.6rem}
-.compare-col h4.gold{color:var(--gold)}
-.compare-col h4.teal{color:var(--teal)}
-.compare-col ul{padding-left:1rem;font-size:12px;color:var(--white3)}
-.compare-col ul li{margin-bottom:.3rem}
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:1rem;
+}
 
-/* numbered list */
-.num-list{counter-reset:nl;padding:0}
-.num-list li{counter-increment:nl;display:flex;gap:.7rem;margin-bottom:.7rem;list-style:none}
-.num-list li::before{content:counter(nl);min-width:20px;height:20px;background:var(--gold-dim);color:var(--gold);border-radius:3px;font-size:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
-.num-list.teal li::before{background:var(--teal-dim);color:var(--teal)}
+.logo {
+  font-family:'Playfair Display',serif;
+  font-size:1.2rem;
+  color:var(--white);
+  text-decoration:none;
+}
 
-/* slide nav bar */
-.slide-nav{display:flex;align-items:center;justify-content:space-between;padding:1rem 1.5rem;border-top:1px solid var(--border);background:var(--bg)}
-.slide-nav-btn{background:var(--bg3);border:1px solid var(--border2);color:var(--white2);padding:8px 20px;border-radius:5px;cursor:pointer;font-size:11px;font-family:'JetBrains Mono',monospace;transition:all .2s;letter-spacing:0.05em}
-.slide-nav-btn:hover:not(:disabled){background:var(--bg4);border-color:var(--gold-border);color:var(--gold)}
-.slide-nav-btn:disabled{opacity:.3;cursor:not-allowed}
-.slide-counter{font-size:11px;color:var(--white3);letter-spacing:0.06em}
-.slide-counter span{color:var(--white)}
-.fullscreen-btn{background:transparent;border:1px solid var(--border2);color:var(--white3);padding:6px 12px;border-radius:4px;cursor:pointer;font-size:11px;font-family:'JetBrains Mono',monospace;transition:all .2s}
-.fullscreen-btn:hover{border-color:var(--gold-border);color:var(--gold)}
+.logo span {
+  color:var(--gold);
+}
 
-/* fullscreen overlay */
-.fs-overlay{display:none;position:fixed;inset:0;background:#000;z-index:999;flex-direction:column}
-.fs-overlay.open{display:flex}
-.fs-slide{flex:1;overflow-y:auto;display:flex;align-items:flex-start;justify-content:center;padding:2rem}
-.fs-slide .slide-text-inner{max-width:900px}
-.fs-slide .slide-img-wrap{max-height:calc(100vh - 100px)}
-.fs-nav{display:flex;align-items:center;justify-content:space-between;padding:.8rem 2rem;border-top:1px solid var(--border);background:rgba(0,0,0,0.95);flex-shrink:0}
+.nav-tabs {
+  display:flex;
+  gap:2px;
+}
 
-/* thumbnail strip */
-.thumb-strip{display:flex;gap:6px;overflow-x:auto;padding:.8rem 1rem;border-top:1px solid var(--border);background:var(--bg);scrollbar-width:thin}
-.thumb{width:80px;flex-shrink:0;border:1px solid var(--border);border-radius:4px;overflow:hidden;cursor:pointer;transition:all .2s;aspect-ratio:4/3;background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:9px;color:var(--white4)}
-.thumb:hover{border-color:var(--border2)}
-.thumb.active{border-color:var(--gold);box-shadow:0 0 0 1px var(--gold-border)}
-.thumb img{width:100%;height:100%;object-fit:cover}
-.thumb-num{font-size:8px;color:var(--white4);text-align:center;margin-top:2px}
+.nav-tab {
+  padding:6px 16px;
 
-/* ===================== QUIZ ===================== */
-.quiz-wrap{max-width:900px;margin:0 auto;padding:2rem 1.5rem}
-.quiz-header{text-align:center;margin-bottom:2.5rem}
-.quiz-header h1{font-family:'Playfair Display',serif;font-size:2.2rem;font-weight:700;margin-bottom:.5rem}
-.quiz-header h1 em{font-style:italic;color:var(--gold)}
-.quiz-header p{font-size:11px;color:var(--white3);letter-spacing:0.08em}
-.quiz-meta{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:1rem}
-.qmeta{background:var(--bg2);border:1px solid var(--border);border-radius:4px;padding:4px 12px;font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:var(--white3)}
+  font-size:10px;
+  letter-spacing:.1em;
+  text-transform:uppercase;
 
-.q-section-label{font-size:9px;letter-spacing:0.18em;text-transform:uppercase;color:var(--white4);margin-bottom:1.2rem;padding-bottom:.6rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
-.q-section-label span{color:var(--gold)}
+  border:none;
+  background:transparent;
+  color:var(--white3);
+
+  cursor:pointer;
+  border-radius:4px;
+
+  transition:.2s;
+
+  font-family:'JetBrains Mono',monospace;
+}
+
+.nav-tab:hover {
+  color:var(--white2);
+  background:var(--bg3);
+}
+
+.nav-tab.active {
+  background:var(--bg3);
+  color:var(--gold);
+
+  border:1px solid var(--gold-border);
+}
+
+.back-link {
+  font-size:10px;
+  color:var(--white3);
+  text-decoration:none;
+  letter-spacing:.08em;
+  transition:.2s;
+  white-space:nowrap;
+}
+
+.back-link:hover {
+  color:var(--gold);
+}
+
+/* ================= PAGES ================= */
+
+.page {
+  display:none;
+  position:relative;
+  z-index:1;
+}
+
+.page.active {
+  display:block;
+}
+
+/* ================= SLIDES ================= */
+
+.viewer-wrap {
+  max-width:1300px;
+  margin:0 auto;
+  padding:1.5rem;
+}
+
+.unit-tabs {
+  display:flex;
+  gap:8px;
+  margin-bottom:1.5rem;
+  flex-wrap:wrap;
+}
+
+.unit-tab {
+  padding:9px 22px;
+
+  font-size:10px;
+  letter-spacing:.1em;
+  text-transform:uppercase;
+
+  border:1px solid var(--border2);
+  background:var(--bg2);
+  color:var(--white3);
+
+  cursor:pointer;
+  border-radius:5px;
+
+  transition:.2s;
+
+  font-family:'JetBrains Mono',monospace;
+}
+
+.unit-tab:hover {
+  border-color:var(--gold-border);
+  color:var(--gold2);
+}
+
+.unit-tab.active {
+  background:var(--gold-dim);
+  border-color:var(--gold-border);
+  color:var(--gold2);
+}
+
+.unit-tab.unit2.active {
+  background:var(--teal-dim);
+  border-color:var(--teal-border);
+  color:var(--teal);
+}
+
+.unit-tab.unit3.active {
+  background:var(--purple-dim);
+  border-color:var(--purple-border);
+  color:var(--purple);
+}
+
+/* ================= SOURCE VIEWER ================= */
+
+.source-stage {
+  background:var(--bg2);
+  border:1px solid var(--border);
+  border-radius:12px;
+  overflow:hidden;
+}
+
+.source-header {
+  padding:1rem 1.5rem;
+
+  border-bottom:1px solid var(--border);
+
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:1rem;
+}
+
+.source-title {
+  font-family:'Playfair Display',serif;
+  font-size:1.25rem;
+}
+
+.source-subtitle {
+  font-size:9px;
+  color:var(--white3);
+  margin-top:4px;
+  letter-spacing:.05em;
+}
+
+.source-open {
+  font-size:9px;
+  color:var(--gold);
+  text-decoration:none;
+
+  padding:7px 12px;
+
+  border:1px solid var(--gold-border);
+  border-radius:4px;
+}
+
+.source-open:hover {
+  background:var(--gold-dim);
+}
+
+.document-frame {
+  width:100%;
+  height:720px;
+  border:none;
+  display:block;
+  background:#111;
+}
+
+/* ================= UNIT 3 SOURCE SWITCHER ================= */
+
+.sub-source-tabs {
+  display:flex;
+  gap:6px;
+  padding:1rem 1.5rem;
+  border-bottom:1px solid var(--border);
+  background:var(--bg);
+}
+
+.sub-source {
+  padding:7px 13px;
+
+  background:var(--bg3);
+  border:1px solid var(--border2);
+  color:var(--white3);
+
+  border-radius:4px;
+
+  font-family:'JetBrains Mono',monospace;
+  font-size:9px;
+
+  cursor:pointer;
+}
+
+.sub-source:hover {
+  color:var(--white);
+  border-color:var(--purple-border);
+}
+
+.sub-source.active {
+  color:var(--purple);
+  background:var(--purple-dim);
+  border-color:var(--purple-border);
+}
+
+/* ================= QUIZ ================= */
+
+.quiz-wrap {
+  max-width:900px;
+  margin:0 auto;
+  padding:2rem 1.5rem;
+}
+
+.quiz-header {
+  text-align:center;
+  margin-bottom:2.5rem;
+}
+
+.quiz-header h1 {
+  font-family:'Playfair Display',serif;
+  font-size:2.2rem;
+  font-weight:700;
+  margin-bottom:.5rem;
+}
+
+.quiz-header h1 em {
+  font-style:italic;
+  color:var(--gold);
+}
+
+.quiz-header p {
+  font-size:11px;
+  color:var(--white3);
+  letter-spacing:.08em;
+}
+
+.quiz-meta {
+  display:flex;
+  gap:8px;
+  justify-content:center;
+  flex-wrap:wrap;
+  margin-top:1rem;
+}
+
+.qmeta {
+  background:var(--bg2);
+  border:1px solid var(--border);
+  border-radius:4px;
+  padding:4px 12px;
+
+  font-size:9px;
+  letter-spacing:.1em;
+  text-transform:uppercase;
+
+  color:var(--white3);
+}
+
+.q-section-label {
+  font-size:9px;
+  letter-spacing:.18em;
+  text-transform:uppercase;
+  color:var(--white4);
+
+  margin-bottom:1.2rem;
+  padding-bottom:.6rem;
+
+  border-bottom:1px solid var(--border);
+
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.q-section-label span {
+  color:var(--gold);
+}
 
 /* Section A */
-.sec-a-grid{display:flex;flex-direction:column;gap:10px;margin-bottom:2.5rem}
-.qa-item{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:1rem 1.2rem;transition:border-color .2s}
-.qa-item.correct{border-color:rgba(34,197,94,0.5);background:rgba(34,197,94,0.05)}
-.qa-item.wrong{border-color:rgba(239,68,68,0.5);background:rgba(239,68,68,0.05)}
-.qa-q{font-size:12px;color:var(--white2);margin-bottom:.8rem;line-height:1.6}
-.qa-q .qn{color:var(--gold);font-weight:500;margin-right:.5rem}
-.qa-opts{display:grid;grid-template-columns:1fr 1fr;gap:6px}
-.qa-opt{background:var(--bg3);border:1px solid var(--border);border-radius:5px;padding:6px 10px;font-size:11px;color:var(--white3);cursor:pointer;text-align:left;font-family:'JetBrains Mono',monospace;transition:all .15s;line-height:1.4}
-.qa-opt:hover:not(:disabled){border-color:var(--gold-border);color:var(--gold)}
-.qa-opt.selected-correct{background:rgba(34,197,94,0.12);border-color:rgba(34,197,94,0.5);color:#86efac}
-.qa-opt.selected-wrong{background:rgba(239,68,68,0.12);border-color:rgba(239,68,68,0.5);color:#fca5a5}
-.qa-opt.reveal-correct{background:rgba(34,197,94,0.08);border-color:rgba(34,197,94,0.4);color:#86efac}
-.qa-opt:disabled{cursor:default}
-.qa-feedback{font-size:10px;margin-top:.6rem;padding:.4rem .8rem;border-radius:4px;display:none}
-.qa-feedback.show{display:block}
-.qa-feedback.ok{background:rgba(34,197,94,0.1);color:#86efac}
-.qa-feedback.bad{background:rgba(239,68,68,0.1);color:#fca5a5}
+
+.sec-a-grid {
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  margin-bottom:2.5rem;
+}
+
+.qa-item {
+  background:var(--bg2);
+  border:1px solid var(--border);
+  border-radius:8px;
+  padding:1rem 1.2rem;
+}
+
+.qa-item.correct {
+  border-color:rgba(34,197,94,.5);
+  background:rgba(34,197,94,.05);
+}
+
+.qa-item.wrong {
+  border-color:rgba(239,68,68,.5);
+  background:rgba(239,68,68,.05);
+}
+
+.qa-q {
+  font-size:12px;
+  color:var(--white2);
+  margin-bottom:.8rem;
+  line-height:1.6;
+}
+
+.qa-q .qn {
+  color:var(--gold);
+  font-weight:500;
+  margin-right:.5rem;
+}
+
+.qa-opts {
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:6px;
+}
+
+.qa-opt {
+  background:var(--bg3);
+  border:1px solid var(--border);
+  border-radius:5px;
+
+  padding:7px 10px;
+
+  font-size:11px;
+  color:var(--white3);
+
+  cursor:pointer;
+  text-align:left;
+
+  font-family:'JetBrains Mono',monospace;
+
+  transition:.15s;
+}
+
+.qa-opt:hover:not(:disabled) {
+  border-color:var(--gold-border);
+  color:var(--gold);
+}
+
+.qa-opt.selected-correct {
+  background:rgba(34,197,94,.12);
+  border-color:rgba(34,197,94,.5);
+  color:#86efac;
+}
+
+.qa-opt.selected-wrong {
+  background:rgba(239,68,68,.12);
+  border-color:rgba(239,68,68,.5);
+  color:#fca5a5;
+}
+
+.qa-opt.reveal-correct {
+  background:rgba(34,197,94,.08);
+  border-color:rgba(34,197,94,.4);
+  color:#86efac;
+}
+
+.qa-opt:disabled {
+  cursor:default;
+}
+
+.qa-feedback {
+  font-size:10px;
+  margin-top:.6rem;
+  padding:.4rem .8rem;
+  border-radius:4px;
+  display:none;
+}
+
+.qa-feedback.show {
+  display:block;
+}
+
+.qa-feedback.ok {
+  background:rgba(34,197,94,.1);
+  color:#86efac;
+}
+
+.qa-feedback.bad {
+  background:rgba(239,68,68,.1);
+  color:#fca5a5;
+}
 
 /* Section B */
-.sec-b-grid{display:flex;flex-direction:column;gap:16px;margin-bottom:2.5rem}
-.qb-item{background:var(--bg2);border:1px solid var(--border);border-radius:10px;overflow:hidden}
-.qb-header{padding:1rem 1.2rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:flex-start;gap:1rem}
-.qb-qn{font-size:10px;color:var(--gold);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:.3rem}
-.qb-q{font-size:12px;color:var(--white2);line-height:1.6}
-.qb-marks{font-size:9px;color:var(--white4);letter-spacing:0.08em;white-space:nowrap}
-.qb-parts{padding:0}
-.qb-part{padding:1rem 1.2rem;border-top:1px solid var(--border)}
-.qb-part-label{font-size:9px;color:var(--teal);letter-spacing:0.12em;text-transform:uppercase;margin-bottom:.5rem}
-.qb-part-q{font-size:12px;color:var(--white2);line-height:1.6;margin-bottom:.8rem}
-.qb-textarea{width:100%;background:var(--bg3);border:1px solid var(--border2);border-radius:5px;color:var(--white2);font-family:'JetBrains Mono',monospace;font-size:11px;padding:.7rem;resize:vertical;min-height:80px;transition:border-color .2s;line-height:1.6}
-.qb-textarea:focus{outline:none;border-color:var(--teal-border)}
-.qb-reveal-btn{margin-top:.6rem;background:transparent;border:1px solid var(--border2);color:var(--white4);padding:5px 12px;border-radius:4px;font-size:10px;font-family:'JetBrains Mono',monospace;cursor:pointer;transition:all .2s;letter-spacing:0.05em}
-.qb-reveal-btn:hover{border-color:var(--teal-border);color:var(--teal)}
-.qb-answer{display:none;margin-top:.8rem;background:var(--bg4);border:1px solid var(--teal-border);border-radius:5px;padding:.8rem 1rem;font-size:11px;color:var(--white3);line-height:1.7}
-.qb-answer.show{display:block}
-.qb-answer strong{color:var(--teal)}
 
-/* Score */
-.score-bar{display:none;background:var(--bg2);border:1px solid var(--gold-border);border-radius:10px;padding:1.5rem;text-align:center;margin-top:2rem}
-.score-bar.show{display:block}
-.score-big{font-family:'Playfair Display',serif;font-size:3rem;font-weight:700;color:var(--gold)}
-.score-label{font-size:11px;color:var(--white3);letter-spacing:0.08em;margin-top:.3rem}
-.score-result-btn{margin-top:1rem;background:var(--gold-dim);border:1px solid var(--gold-border);color:var(--gold);padding:10px 24px;border-radius:5px;font-family:'JetBrains Mono',monospace;font-size:11px;cursor:pointer;letter-spacing:0.06em;transition:all .2s}
-.score-result-btn:hover{background:rgba(245,166,35,0.2)}
+.sec-b-grid {
+  display:flex;
+  flex-direction:column;
+  gap:16px;
+  margin-bottom:2.5rem;
+}
 
-/* action bar */
-.quiz-actions{display:flex;gap:10px;justify-content:center;margin:2rem 0}
-.qaction{padding:10px 24px;border-radius:6px;font-family:'JetBrains Mono',monospace;font-size:11px;cursor:pointer;letter-spacing:0.06em;transition:all .2s;border:1px solid}
-.qaction.primary{background:var(--gold-dim);border-color:var(--gold-border);color:var(--gold)}
-.qaction.primary:hover{background:rgba(245,166,35,0.2)}
-.qaction.secondary{background:transparent;border-color:var(--border2);color:var(--white3)}
-.qaction.secondary:hover{border-color:var(--white3);color:var(--white)}
+.qb-item {
+  background:var(--bg2);
+  border:1px solid var(--border);
+  border-radius:10px;
+  overflow:hidden;
+}
 
-/* choose 4 warning */
-.choice-notice{background:var(--bg3);border:1px solid var(--gold-border);border-radius:6px;padding:.8rem 1.2rem;font-size:11px;color:var(--white3);margin-bottom:1.5rem;line-height:1.6}
-.choice-notice strong{color:var(--gold)}
-.qb-item.deselected{opacity:.45}
-.qb-select-btn{font-size:9px;letter-spacing:0.08em;text-transform:uppercase;padding:4px 10px;border-radius:3px;border:1px solid var(--border2);background:transparent;color:var(--white4);cursor:pointer;font-family:'JetBrains Mono',monospace;transition:all .2s}
-.qb-select-btn:hover{border-color:var(--gold-border);color:var(--gold)}
-.qb-select-btn.selected{background:var(--gold-dim);border-color:var(--gold-border);color:var(--gold)}
+.qb-item.deselected {
+  opacity:.45;
+}
 
-/* scrollbar */
-::-webkit-scrollbar{width:4px;height:4px}
-::-webkit-scrollbar-track{background:var(--bg)}
-::-webkit-scrollbar-thumb{background:var(--gold);border-radius:2px;opacity:.5}
+.qb-header {
+  padding:1rem 1.2rem;
+  border-bottom:1px solid var(--border);
 
-@media(max-width:700px){
-  .qa-opts{grid-template-columns:1fr}
-  .compare-grid{grid-template-columns:1fr}
-  .slide-text-inner{padding:1.5rem}
-  .nav-tab span{display:none}
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:1rem;
+}
+
+.qb-qn {
+  font-size:10px;
+  color:var(--gold);
+  letter-spacing:.1em;
+  text-transform:uppercase;
+  margin-bottom:.3rem;
+}
+
+.qb-q {
+  font-size:12px;
+  color:var(--white2);
+  line-height:1.6;
+}
+
+.qb-select-btn {
+  font-size:9px;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+
+  padding:4px 10px;
+
+  border-radius:3px;
+  border:1px solid var(--border2);
+
+  background:transparent;
+  color:var(--white4);
+
+  cursor:pointer;
+  font-family:'JetBrains Mono',monospace;
+}
+
+.qb-select-btn.selected {
+  background:var(--gold-dim);
+  border-color:var(--gold-border);
+  color:var(--gold);
+}
+
+.qb-parts {
+  padding:0;
+}
+
+.qb-part {
+  padding:1rem 1.2rem;
+  border-top:1px solid var(--border);
+}
+
+.qb-part-label {
+  font-size:9px;
+  color:var(--teal);
+  letter-spacing:.12em;
+  text-transform:uppercase;
+  margin-bottom:.5rem;
+}
+
+.qb-part-q {
+  font-size:12px;
+  color:var(--white2);
+  line-height:1.6;
+  margin-bottom:.8rem;
+}
+
+.qb-textarea {
+  width:100%;
+
+  background:var(--bg3);
+  border:1px solid var(--border2);
+  border-radius:5px;
+
+  color:var(--white2);
+
+  font-family:'JetBrains Mono',monospace;
+  font-size:11px;
+
+  padding:.7rem;
+
+  resize:vertical;
+  min-height:80px;
+
+  line-height:1.6;
+}
+
+.qb-textarea:focus {
+  outline:none;
+  border-color:var(--teal-border);
+}
+
+.qb-reveal-btn {
+  margin-top:.6rem;
+
+  background:transparent;
+  border:1px solid var(--border2);
+
+  color:var(--white4);
+
+  padding:5px 12px;
+
+  border-radius:4px;
+
+  font-size:10px;
+  font-family:'JetBrains Mono',monospace;
+
+  cursor:pointer;
+}
+
+.qb-reveal-btn:hover {
+  border-color:var(--teal-border);
+  color:var(--teal);
+}
+
+.qb-answer {
+  display:none;
+
+  margin-top:.8rem;
+
+  background:var(--bg4);
+  border:1px solid var(--teal-border);
+  border-radius:5px;
+
+  padding:.8rem 1rem;
+
+  font-size:11px;
+  color:var(--white3);
+
+  line-height:1.7;
+}
+
+.qb-answer.show {
+  display:block;
+}
+
+.qb-answer strong {
+  color:var(--teal);
+}
+
+/* Buttons */
+
+.quiz-actions {
+  display:flex;
+  gap:10px;
+  justify-content:center;
+  margin:2rem 0;
+}
+
+.qaction {
+  padding:10px 24px;
+  border-radius:6px;
+
+  font-family:'JetBrains Mono',monospace;
+  font-size:11px;
+
+  cursor:pointer;
+  letter-spacing:.06em;
+
+  border:1px solid;
+}
+
+.qaction.primary {
+  background:var(--gold-dim);
+  border-color:var(--gold-border);
+  color:var(--gold);
+}
+
+.qaction.secondary {
+  background:transparent;
+  border-color:var(--border2);
+  color:var(--white3);
+}
+
+.score-bar {
+  display:none;
+
+  background:var(--bg2);
+  border:1px solid var(--gold-border);
+
+  border-radius:10px;
+
+  padding:1.5rem;
+
+  text-align:center;
+  margin-top:2rem;
+}
+
+.score-bar.show {
+  display:block;
+}
+
+.score-big {
+  font-family:'Playfair Display',serif;
+  font-size:3rem;
+  font-weight:700;
+  color:var(--gold);
+}
+
+.score-label {
+  font-size:11px;
+  color:var(--white3);
+  margin-top:.3rem;
+}
+
+.choice-notice {
+  background:var(--bg3);
+  border:1px solid var(--gold-border);
+
+  border-radius:6px;
+
+  padding:.8rem 1.2rem;
+
+  font-size:11px;
+  color:var(--white3);
+
+  margin-bottom:1.5rem;
+  line-height:1.6;
+}
+
+.choice-notice strong {
+  color:var(--gold);
+}
+
+/* ================= RESPONSIVE ================= */
+
+@media(max-width:700px) {
+
+  .header-inner {
+    height:auto;
+    min-height:56px;
+    padding:8px 0;
+    flex-wrap:wrap;
+  }
+
+  .nav-tabs {
+    order:3;
+    width:100%;
+    justify-content:center;
+  }
+
+  .document-frame {
+    height:600px;
+  }
+
+  .qa-opts {
+    grid-template-columns:1fr;
+  }
+
+  .source-header {
+    flex-direction:column;
+    align-items:flex-start;
+  }
+
+  .unit-tab {
+    flex:1;
+    min-width:100px;
+  }
+}
+
+::-webkit-scrollbar {
+  width:4px;
+  height:4px;
+}
+
+::-webkit-scrollbar-track {
+  background:var(--bg);
+}
+
+::-webkit-scrollbar-thumb {
+  background:var(--gold);
+  border-radius:2px;
 }
 </style>
 </head>
+
 <body>
 
+<!-- ================= HEADER ================= -->
+
 <div class="header">
+
   <div class="header-inner">
-    <a class="logo" href="index.html">Engg<span>.</span>Prep <span style="font-size:.7rem;color:var(--white3);font-family:'JetBrains Mono',monospace">— PA</span></a>
+
+    <a class="logo" href="index.html">
+      Engg<span>.</span>Prep
+      <span style="font-size:.7rem;color:var(--white3);font-family:'JetBrains Mono',monospace">
+        — PA
+      </span>
+    </a>
+
     <div class="nav-tabs">
-      <button class="nav-tab active" onclick="showPage('slides')">⊞ <span>Slides</span></button>
-      <button class="nav-tab" onclick="showPage('quiz')">◈ <span>Mid 1 Quiz</span></button>
+
+      <button
+        class="nav-tab active"
+        onclick="showPage('slides')">
+        ⊞ <span>Slides</span>
+      </button>
+
+      <button
+        class="nav-tab"
+        onclick="showPage('quiz')">
+        ◈ <span>Mid 1 Quiz</span>
+      </button>
+
     </div>
-    <a class="back-link" href="index.html">← 4th Year</a>
+
+    <a class="back-link" href="index.html">
+      ← 4th Year
+    </a>
+
   </div>
+
 </div>
 
-<!-- ======================== SLIDE VIEWER PAGE ======================== -->
+
+<!-- =========================================================
+     SLIDES PAGE
+========================================================= -->
+
 <div class="page active" id="page-slides">
-<div class="viewer-wrap">
-  <div class="unit-tabs">
-    <button class="unit-tab active" onclick="switchUnit(0)">Unit 2 — Prediction Effect & Deployment</button>
-    <button class="unit-tab teal-tab" onclick="switchUnit(1)">Unit 3 — Decision Trees</button>
-    <button class="unit-tab purple-tab" onclick="switchUnit(2)">Unit 3 — CNN (Slides)</button>
-  </div>
 
-  <div class="slide-stage">
-    <div class="slide-display" id="slideDisplay"></div>
-    <div class="slide-nav">
-      <button class="slide-nav-btn" onclick="prevSlide()" id="btnPrev">← Prev</button>
-      <div style="display:flex;align-items:center;gap:1rem">
-        <div class="slide-counter">Slide <span id="slideNum">1</span> / <span id="slideTotal">1</span></div>
-        <button class="fullscreen-btn" onclick="openFullscreen()">⛶ Fullscreen</button>
+  <div class="viewer-wrap">
+
+    <!-- UNIT TABS -->
+
+    <div class="unit-tabs">
+
+      <button
+        class="unit-tab active"
+        onclick="switchUnit(0)">
+        Unit 1
+      </button>
+
+      <button
+        class="unit-tab unit2"
+        onclick="switchUnit(1)">
+        Unit 2
+      </button>
+
+      <button
+        class="unit-tab unit3"
+        onclick="switchUnit(2)">
+        Unit 3
+      </button>
+
+    </div>
+
+
+    <!-- DOCUMENT VIEWER -->
+
+    <div class="source-stage">
+
+      <div class="source-header">
+
+        <div>
+          <div class="source-title" id="sourceTitle">
+            Unit 1
+          </div>
+
+          <div class="source-subtitle" id="sourceSubtitle">
+            Loading source material...
+          </div>
+        </div>
+
+        <a
+          id="sourceOpen"
+          class="source-open"
+          href="#"
+          target="_blank">
+          ↗ Open Source
+        </a>
+
       </div>
-      <button class="slide-nav-btn" onclick="nextSlide()" id="btnNext">Next →</button>
+
+
+      <!-- UNIT 3 HAS TWO FILES -->
+
+      <div
+        class="sub-source-tabs"
+        id="unit3Sources"
+        style="display:none">
+
+        <button
+          class="sub-source active"
+          onclick="switchUnit3Source(0)">
+          Decision Trees
+        </button>
+
+        <button
+          class="sub-source"
+          onclick="switchUnit3Source(1)">
+          CNN
+        </button>
+
+      </div>
+
+
+      <iframe
+        id="documentFrame"
+        class="document-frame"
+        title="Course Material">
+      </iframe>
+
     </div>
-    <div class="thumb-strip" id="thumbStrip"></div>
+
   </div>
-</div>
+
 </div>
 
-<!-- fullscreen overlay -->
-<div class="fs-overlay" id="fsOverlay">
-  <div class="fs-slide" id="fsSlide"></div>
-  <div class="fs-nav">
-    <button class="slide-nav-btn" onclick="prevSlide();syncFS()">← Prev</button>
-    <div style="display:flex;align-items:center;gap:1rem">
-      <div class="slide-counter">Slide <span id="fsNum">1</span> / <span id="fsTotal">1</span></div>
-      <button class="fullscreen-btn" onclick="closeFullscreen()">✕ Close</button>
-    </div>
-    <button class="slide-nav-btn" onclick="nextSlide();syncFS()">Next →</button>
-  </div>
-</div>
 
-<!-- ======================== QUIZ PAGE ======================== -->
+<!-- =========================================================
+     QUIZ PAGE
+========================================================= -->
+
 <div class="page" id="page-quiz">
-<div class="quiz-wrap">
-  <div class="quiz-header">
-    <h1>Predictive Analysis<br><em>Mid 1 Mock Exam</em></h1>
-    <p>Unit 2 · Unit 3 · Prediction Effect · Decision Trees · CNN · Deployment · Data Ethics</p>
-    <div class="quiz-meta">
-      <span class="qmeta">30 Marks Total</span>
-      <span class="qmeta">Sec A · 10 × 1M</span>
-      <span class="qmeta">Sec B · 4 of 6 · 5M each</span>
-      <span class="qmeta">No Timer</span>
+
+  <div class="quiz-wrap">
+
+    <div class="quiz-header">
+
+      <h1>
+        Predictive Analysis
+        <br>
+        <em>Mid 1 Mock Exam</em>
+      </h1>
+
+      <p>
+        Unit 1 · Unit 2 · Unit 3 · Prediction Effect · Decision Trees · CNN
+      </p>
+
+      <div class="quiz-meta">
+
+        <span class="qmeta">
+          30 Marks Total
+        </span>
+
+        <span class="qmeta">
+          Sec A · 10 × 1M
+        </span>
+
+        <span class="qmeta">
+          Sec B · 4 of 6 · 5M each
+        </span>
+
+        <span class="qmeta">
+          No Timer
+        </span>
+
+      </div>
+
     </div>
-  </div>
 
-  <!-- SECTION A -->
-  <div class="q-section-label">Section A — Answer All &nbsp; <span>10 × 1 = 10 Marks</span></div>
-  <div class="sec-a-grid" id="secA"></div>
 
-  <div class="quiz-actions">
-    <button class="qaction primary" onclick="submitSecA()">Submit Section A</button>
-    <button class="qaction secondary" onclick="resetSecA()">Reset</button>
-  </div>
-  <div class="score-bar" id="secAScore">
-    <div class="score-big" id="secAScoreNum">0/10</div>
-    <div class="score-label">Section A Score</div>
-  </div>
+    <!-- SECTION A -->
 
-  <!-- SECTION B -->
-  <div style="margin-top:2.5rem"></div>
-  <div class="q-section-label">Section B — Attempt Any 4 of 6 &nbsp; <span>4 × 5 = 20 Marks</span></div>
-  <div class="choice-notice">
-    <strong>Instructions:</strong> Attempt any <strong>4 questions</strong> out of 6. Each question has two parts (a) and (b), each worth 2.5 marks. Toggle questions in/out using the <em>Select</em> button. Write your answer in the text box, then click <em>Show Model Answer</em> to check.
+    <div class="q-section-label">
+
+      Section A — Answer All
+
+      <span>
+        10 × 1 = 10 Marks
+      </span>
+
+    </div>
+
+    <div
+      class="sec-a-grid"
+      id="secA">
+    </div>
+
+
+    <div class="quiz-actions">
+
+      <button
+        class="qaction primary"
+        onclick="submitSecA()">
+        Submit Section A
+      </button>
+
+      <button
+        class="qaction secondary"
+        onclick="resetSecA()">
+        Reset
+      </button>
+
+    </div>
+
+
+    <div
+      class="score-bar"
+      id="secAScore">
+
+      <div
+        class="score-big"
+        id="secAScoreNum">
+        0/10
+      </div>
+
+      <div class="score-label">
+        Section A Score
+      </div>
+
+    </div>
+
+
+    <!-- SECTION B -->
+
+    <div style="margin-top:2.5rem"></div>
+
+    <div class="q-section-label">
+
+      Section B — Attempt Any 4 of 6
+
+      <span>
+        4 × 5 = 20 Marks
+      </span>
+
+    </div>
+
+
+    <div class="choice-notice">
+
+      <strong>Instructions:</strong>
+
+      Attempt any
+      <strong>4 questions</strong>
+      out of 6.
+
+      Each question has two parts,
+      (a) and (b), each worth 2.5 marks.
+
+      Toggle questions in/out using the
+      <em>Select</em> button.
+
+      Write your answer in the text box,
+      then click
+      <em>Show Model Answer</em>
+      to check.
+
+    </div>
+
+
+    <div
+      class="sec-b-grid"
+      id="secB">
+    </div>
+
   </div>
-  <div class="sec-b-grid" id="secB"></div>
 
 </div>
-</div>
+
 
 <script>
-// ====================== SLIDE DATA ======================
-''' + cnn_js + r'''
 
-const UNIT2_SLIDES = [
-{title:"Unit 2: Prediction Effect, Deployment & Data Ethics",subtitle:"Predictive Analysis — 4th Year",body:`<p>Topics covered in this unit:</p><ul class="num-list"><li>What is the Prediction Effect?</li><li>Positive vs. Negative Prediction Effect</li><li>Factors Affecting Prediction Effect</li><li>Deployment of Prediction Models</li><li>Ethics & Responsibilities in PA</li><li>The Data Effect</li></ul>`,color:"gold"},
-{title:"Prediction Effect",subtitle:"Unit 2 · Slide 2",body:`<p>The <em>Prediction Effect</em> refers to all overall impacts, outcomes and changes that occur when predictions are used in decision-making.</p><p>It describes how predictive analytics influences performance, reduces errors, and enhances future outcomes.</p><div class="flow"><span class="flow-step">Prediction</span><span class="flow-arrow">→</span><span class="flow-step">Decision</span><span class="flow-arrow">→</span><span class="flow-step">Action</span><span class="flow-arrow">→</span><span class="flow-step">Outcome</span><span class="flow-arrow">→</span><span class="flow-step">New Data</span></div><div class="eg">Example: A university uses an ML model to identify high-risk students → provides coaching → student passes. The prediction led to an intervention that improved the outcome.</div>`,color:"gold"},
-{title:"Positive vs. Negative Prediction Effect",subtitle:"Unit 2 · Slide 3",body:`<div class="compare-grid"><div class="compare-col"><h4 class="gold">✓ Positive Effect</h4><p style="font-size:12px;color:var(--white3)">A prediction leads to an action that improves the outcome.</p><div class="eg" style="margin-top:.6rem">Predict failure → Extra coaching → Student passes</div></div><div class="compare-col"><h4 style="color:#fca5a5">✗ Negative Effect</h4><p style="font-size:12px;color:var(--white3)">A prediction produces an undesirable outcome.</p><div class="eg" style="border-left-color:#fca5a5;margin-top:.6rem">Bank predicts default → Rejects loan → Customer's financial situation worsens</div></div></div>`,color:"gold"},
-{title:"Real-World Prediction Examples",subtitle:"Unit 2 · Slide 4",body:`<ul class="num-list"><li><strong>Cybersecurity:</strong> System predicts IP attack → Blocks IP → Attack never happens. Was the prediction correct? Impossible to know — the intervention may have prevented it.</li><li><strong>Healthcare:</strong> Hospital predicts high-risk patient → Provides tests + monitoring + treatment → Patient doesn't develop disease. Do not conclude the model was wrong — intervention may have prevented the event.</li></ul><div class="flow" style="margin-top:1rem"><span class="flow-step">Prediction</span><span class="flow-arrow">→</span><span class="flow-step">Intervention</span><span class="flow-arrow">→</span><span class="flow-step">Risk Reduced</span><span class="flow-arrow">→</span><span class="flow-step">Event Prevented</span></div>`,color:"gold"},
-{title:"Factors Affecting Prediction Effect",subtitle:"Unit 2 · Slides 6–10",body:`<ul class="num-list"><li><strong>Improves Decision-Making</strong> — Data-driven decisions replace intuition</li><li><strong>Reduces Uncertainty</strong> — Models estimate future outcomes; supermarket stocks umbrellas before rain</li><li><strong>Increases Accuracy</strong> — ML models outperform manual forecasting</li><li><strong>Minimizes Risk</strong> — Early prediction of fraud, failures, health risks</li><li><strong>Saves Time & Cost</strong> — Predictive maintenance avoids machine failure downtime</li><li><strong>Enhances Efficiency</strong> — Food delivery allocates partners during peak hours</li><li><strong>Better Customer Experience</strong> — Netflix/Amazon-style personalization</li><li><strong>Competitive Advantage</strong> — Airlines adjust prices faster than competitors</li><li><strong>Supports Continuous Improvement</strong> — Models retrained on new data over time</li></ul>`,color:"gold"},
-{title:"Deployment of Prediction Models",subtitle:"Unit 2 · Slide 11",body:`<p>Deployment is the process of integrating a trained ML model into a production environment where it can process real-world data and provide predictions.</p><div class="flow" style="flex-direction:column;align-items:flex-start;gap:4px"><span class="flow-step">1. Define Problem Statement</span><span class="flow-arrow" style="margin-left:10px">↓</span><span class="flow-step">2. Data Collection</span><span class="flow-arrow" style="margin-left:10px">↓</span><span class="flow-step">3. Data Cleaning</span><span class="flow-arrow" style="margin-left:10px">↓</span><span class="flow-step">4. Data Analysis (EDA)</span><span class="flow-arrow" style="margin-left:10px">↓</span><span class="flow-step">5. Build Model</span><span class="flow-arrow" style="margin-left:10px">↓</span><span class="flow-step">6. Validate</span><span class="flow-arrow" style="margin-left:10px">↓</span><span class="flow-step">7. Deploy</span><span class="flow-arrow" style="margin-left:10px">↓</span><span class="flow-step">8. Monitor & Update</span></div>`,color:"gold"},
-{title:"Deployment Steps (1–4)",subtitle:"Unit 2 · Slide 12",body:`<ul class="num-list"><li><strong>Define Problem Statement</strong> — Clearly identify what you expect to predict and the business problem being solved.</li><li><strong>Data Collection</strong> — Gather data from databases, sensors, surveys, logs. Model quality depends on data quality & quantity.</li><li><strong>Data Cleaning</strong> — Remove noise, missing values, duplicates, incorrect entries. Converts raw data into a usable format.</li><li><strong>Data Analysis (EDA)</strong> — Explore patterns, identify correlations, visualize data, check relationships between variables.</li></ul>`,color:"gold"},
-{title:"Deployment Steps (5–7)",subtitle:"Unit 2 · Slide 13",body:`<ul class="num-list" start="5"><li><strong>Build Model</strong> — Apply ML algorithms (Regression, Decision Trees, Neural Networks, SVM, Clustering). Train on cleaned data, then serialize/save the model.</li><li><strong>Validate</strong> — Test on unseen data using metrics: <em>Accuracy, Precision, Recall, RMSE</em>. Use cross-validation for reliable evaluation.</li><li><strong>Deploy</strong> — Integrate into web/mobile app, or deploy via APIs/cloud services. The model now accepts live data and generates real-time predictions.</li></ul>`,color:"gold"},
-{title:"Real-Time vs. Batch Deployment",subtitle:"Unit 2 · Slide 14",body:`<div class="compare-grid"><div class="compare-col"><h4 class="gold">Real-Time Deployment</h4><ul><li>Predictions made immediately on new input</li><li>Example: Fraud detection</li><li>₹1,50,000 transaction → Model → 96% fraud probability → Flagged immediately</li></ul></div><div class="compare-col"><h4 class="teal">Batch Deployment</h4><ul><li>Large data collected, predictions generated periodically</li><li>Example: Daily sales forecasting</li><li>Midnight run → Predict tomorrow's demand → Inventory planning</li></ul></div></div>`,color:"gold"},
-{title:"Deployment Types Comparison",subtitle:"Unit 2 · Slide 16",body:`<table class="slide-table"><tr><th>Parameter</th><th>Batch</th><th>Real-Time</th><th>Edge</th><th>Cloud</th></tr><tr><td>Data Speed</td><td>Slow/periodic</td><td>Very fast</td><td>Very fast</td><td>Fast</td></tr><tr><td>Processing</td><td>In batches</td><td>One-by-one</td><td>On device</td><td>Cloud server</td></tr><tr><td>Decision</td><td>Delayed</td><td>Immediate</td><td>Immediate</td><td>Near real-time</td></tr><tr><td>Example</td><td>Sales forecast</td><td>Fraud detect</td><td>Face detect (CCTV)</td><td>AWS/Azure fraud</td></tr></table>`,color:"gold"},
-{title:"Ethics in Predictive Analytics",subtitle:"Unit 2 · Slide 17",body:`<p>Ethics in PA refers to the <em>fair, responsible, and transparent</em> use of data and predictive models.</p><ul class="num-list"><li><strong>Privacy & Data Protection</strong> — Collect only necessary data; follow GDPR; encrypt storage; limit access</li><li><strong>Transparency</strong> — Users must know how/why predictions are made. Avoid black-box systems — especially in Healthcare, Finance, Education</li><li><strong>Avoiding Bias</strong> — Models must not produce unfair outcomes based on gender, caste, race, age, religion</li><li><strong>Informed Consent</strong> — Users must agree to share data; no hidden/unauthorized usage</li><li><strong>Human Oversight</strong> — Critical decisions (diagnosis, credit scoring, legal) must have human review</li></ul>`,color:"gold"},
-{title:"Ethics (cont.) & Data Ethics",subtitle:"Unit 2 · Slides 19–20",body:`<ul class="num-list" start="6"><li><strong>Security & Confidentiality</strong> — Encryption, access control, secure storage. Only authorized personnel access data.</li><li><strong>Data Quality</strong> — Accurate, complete, up-to-date data. Poor data → wrong predictions → biased decisions.</li><li><strong>Continuous Monitoring (Audits)</strong> — Regularly check accuracy, fairness, prediction drift. Update model when new data arrives.</li></ul>`,color:"gold"},
-{title:"The Data Effect",subtitle:"Unit 2 · Slides 20–24",body:`<ul class="num-list"><li><strong>Data Quality Effect</strong> — Clean + correct data → accurate results; noisy/missing data → unreliable predictions</li><li><strong>Data Quantity Effect</strong> — Too little: underfitting; adequate: better learning; very large: needs more compute</li><li><strong>Data Relevance Effect</strong> — Shoe size is irrelevant for predicting student marks; attendance and study hours are relevant</li><li><strong>Data Diversity Effect</strong> — Face recognition trained on one demographic performs poorly on others. Diverse data → better generalization + fairness</li><li><strong>Data Timeline Effect</strong> — Outdated data → outdated predictions. Fresh data → updated accuracy</li><li><strong>Data Security Effect</strong> — Secure data builds trust; customers share accurate information → better model</li><li><strong>Data Integration Effect</strong> — Clean integration from multiple sources prevents duplicates, inconsistencies</li><li><strong>Data Structure Effect</strong> — Structured data is easier to process; unstructured (text/images/audio) needs extra cleaning</li></ul>`,color:"gold"},
-];
+/* =========================================================
+   ACTUAL GITHUB SOURCE FILES
+========================================================= */
 
-const UNIT3_SLIDES = [
-{title:"Decision Trees",subtitle:"Unit 3 · Slide 1",body:`<p>A Decision Tree is a supervised ML algorithm used for both <em>classification</em> and <em>regression</em>.</p><p>Topics covered:</p><ul class="num-list"><li>Terminologies related to Decision Trees</li><li>Different splitting criteria (Gini, CHAID, Variance Reduction, CART)</li><li>Optimizing performance of Decision Trees</li></ul><div class="eg">Ensemble algorithms like Random Forest and XGBoost use multiple Decision Trees together.</div>`,color:"teal"},
-{title:"Why Split? Pure Nodes",subtitle:"Unit 3 · Slides 5–6",body:`<p>The <strong>objective of a Decision Tree</strong> is to produce <em>pure nodes</em> — nodes where all (or most) samples belong to a single class.</p><ul class="num-list"><li>A split is considered good if it results in more homogeneous (pure) sub-nodes</li><li>In practice, perfectly pure nodes are rare — but we aim to get as close as possible</li><li>DT selects the split that results in the most homogeneous sub-nodes</li></ul><div class="eg">Example: If splitting by Height &gt; 5.5 puts 90% "Yes" in left and 80% "No" in right, that's a better split than one that mixes classes.</div>`,color:"teal"},
-{title:"How to Select the Best Split?",subtitle:"Unit 3 · Slide 7",body:`<p>DT doesn't stop at the first split — it can have multiple levels of decisions. The key question is: <em>which feature to split on, and at what threshold?</em></p><ul class="num-list"><li>DT splits nodes on all available variables</li><li>Techniques measure the <strong>purity</strong> of resulting nodes</li><li>The split with the highest purity (or lowest impurity) is selected</li></ul><p style="margin-top:.8rem;color:var(--white3);font-size:12px">Techniques: <span style="color:var(--teal)">Gini Impurity · CHAID (Chi-Square) · Variance Reduction · CART</span></p>`,color:"teal"},
-{title:"Gini Impurity",subtitle:"Unit 3 · Slides 10–11",body:`<p><strong>Gini Impurity</strong> measures how often a randomly chosen element would be incorrectly classified.</p><p style="margin:.6rem 0"><em>Gini = 1 − Σ(pᵢ)²</em> where pᵢ is the proportion of class i</p><ul class="num-list"><li>Gini = 0 → perfectly pure node</li><li>Gini = 0.5 → maximum impurity (50/50 split)</li><li>To choose the best split: compute <strong>Weighted Gini Impurity</strong> for each feature</li><li>Select the feature with the <strong>lowest weighted Gini</strong></li></ul><div class="eg">Example from slides: Weighted Gini for Class = 0.32 is better than Performance in Class = 0.475 → Class is selected</div>`,color:"teal"},
-{title:"CHAID — Chi-Square Automatic Interaction Detection",subtitle:"Unit 3 · Slide 12",body:`<p>CHAID selects the feature with the strongest <em>statistical association</em> with the target variable using the <strong>Chi-square test</strong>.</p><p style="margin:.6rem 0">Formula: <em>χ² = Σ (Observed − Expected)² / Expected</em></p><ul class="num-list"><li>Compute Chi-square value for each feature</li><li>Select the feature with the <strong>highest Chi-square value</strong> (strongest association)</li><li>Used mainly for classification with categorical variables</li></ul>`,color:"teal"},
-{title:"CHAID — Play Tennis Example",subtitle:"Unit 3 · Slides 13–16",body:`<p>Dataset: 14 days, 4 features (Outlook, Temp, Humidity, Wind), target: Play Tennis (Yes/No)</p><table class="slide-table teal"><tr><th>Feature</th><th>Chi-Square Value</th></tr><tr><td>Outlook</td><td><strong>4.092</strong> ← Highest</td></tr><tr><td>Humidity</td><td>3.207</td></tr><tr><td>Temperature</td><td>2.569</td></tr><tr><td>Wind</td><td>1.604</td></tr></table><div class="eg eg2">Outlook has 3 classes: Sunny (χ²=0.316+0.316), Overcast (χ²=1.414+1.414), Rain (χ²=0.316+0.316). Total = 4.092. Since Outlook has the highest χ², it is selected as the root node.</div>`,color:"teal"},
-{title:"CHAID — Steps",subtitle:"Unit 3 · Slide 17",body:`<ul class="num-list"><li>Start with complete training data in the root node</li><li>Check the statistical significance of each independent variable</li><li>Select the variable with the <strong>lowest p-value</strong> (= highest Chi-square) for splitting</li><li>Repeat for each subset until: (a) All variables are exhausted/not significant at α, OR (b) Stopping criteria are met</li><li>Generate business rules for the terminal (leaf) nodes</li></ul>`,color:"teal"},
-{title:"Variance Reduction (for Regression DTs)",subtitle:"Unit 3 · Slide 18–20",body:`<p>Used when the target variable is <em>continuous</em> (e.g., taxi fare, sales, temperature).</p><p>Formula: <em>Variance = Σ(xᵢ − x̄)² / n</em></p><ul class="num-list"><li>Calculate variance of each child node after a split</li><li>Calculate <strong>weighted variance</strong> of the split</li><li>Choose the split that gives the <strong>lowest weighted variance</strong></li></ul><div class="eg">Example from slides: Plays Cricket (1 = yes, 0 = no). Variance of Class split = 0.16 is lower than Performance split = 0.238 → Class split is chosen.</div>`,color:"teal"},
-{title:"Optimizing DT Performance — Overfitting & Underfitting",subtitle:"Unit 3 · Slide 21",body:`<p>If no constraints are set, the DT grows until all nodes are pure → <em>100% training accuracy</em> → <strong>Overfitting</strong> on unseen data.</p><p>If too many constraints, the tree can't learn → <strong>Underfitting</strong>.</p><p style="margin-top:.8rem;color:var(--teal)">4 Hyperparameters to control DT growth:</p><ul class="num-list"><li><strong>Min. samples for a node split</strong> — Higher = controls overfitting; too high = underfitting</li><li><strong>Min. samples for terminal (leaf) nodes</strong> — Higher = controls overfitting; too high = underfitting</li><li><strong>Max. depth of tree</strong> — Higher depth = overfitting; lower depth = underfitting</li><li><strong>Max. number of terminal nodes</strong> — Limits total leaf count</li></ul>`,color:"teal"},
-{title:"Practice Problem",subtitle:"Unit 3 · Slide 26",body:`<p>Dataset: 6 records, features: Age, Income, Student; Target: Buy Laptop (Yes/No)</p><table class="slide-table teal"><tr><th>ID</th><th>Age</th><th>Income</th><th>Student</th><th>Buy Laptop</th></tr><tr><td>1</td><td>Young</td><td>High</td><td>No</td><td>No</td></tr><tr><td>2</td><td>Young</td><td>Low</td><td>Yes</td><td>Yes</td></tr><tr><td>3</td><td>Middle</td><td>High</td><td>Yes</td><td>Yes</td></tr><tr><td>4</td><td>Senior</td><td>Low</td><td>Yes</td><td>Yes</td></tr><tr><td>5</td><td>Senior</td><td>High</td><td>No</td><td>No</td></tr><tr><td>6</td><td>Middle</td><td>Low</td><td>No</td><td>Yes</td></tr></table><ul class="num-list" style="margin-top:.8rem"><li>Calculate Gini Impurity of the root node (3 Yes, 3 No → p=0.5 each → Gini = 1−0.25−0.25 = <strong>0.5</strong>)</li><li>Compute weighted Gini for all features</li><li>Which feature does GINI select first?</li><li>Which feature does CHAID likely select? Explain using χ².</li></ul>`,color:"teal"},
-];
+const BASE =
+  "https://raw.githubusercontent.com/alysaa61/btech-made-easy/main/4thyr/files/";
 
-// ====================== VIEWER STATE ======================
+
+/*
+   Unit 1
+*/
+const UNIT1_FILE =
+  BASE + "unit_1-compressed.pdf";
+
+
+/*
+   Unit 2
+
+   PPTX files cannot be displayed directly inside
+   a normal browser iframe.
+
+   Microsoft Office's online viewer is therefore used.
+*/
+const UNIT2_FILE =
+  BASE + "unit-2.pptx";
+
+const UNIT2_VIEWER =
+  "https://view.officeapps.live.com/op/view.aspx?src="
+  + encodeURIComponent(UNIT2_FILE);
+
+
+/*
+   Unit 3
+*/
+const UNIT3_DECISION_TREE =
+  BASE + "unit_3-compressed.pdf";
+
+const UNIT3_CNN =
+  BASE + "unit_3CNN.pdf";
+
+
+/* =========================================================
+   SOURCE STATE
+========================================================= */
+
 let currentUnit = 0;
-let currentSlide = 0;
-let isFS = false;
+let currentUnit3Source = 0;
 
-const units = [
-  { slides: UNIT2_SLIDES, type: 'text', label: 'Unit 2', color: 'gold' },
-  { slides: UNIT3_SLIDES, type: 'text', label: 'Unit 3 — DT', color: 'teal' },
-  { slides: CNN_SLIDES.map((src,i)=>({src,index:i})), type: 'image', label: 'Unit 3 — CNN', color: 'purple' },
+
+const UNIT_DATA = [
+
+  {
+    title: "Unit 1",
+    subtitle: "Unit 1 · Predictive Analysis",
+    url: UNIT1_FILE,
+    type: "pdf"
+  },
+
+  {
+    title: "Unit 2",
+    subtitle: "Unit 2 · Prediction Effect, Deployment & Data Ethics",
+    url: UNIT2_VIEWER,
+    type: "pptx"
+  },
+
+  {
+    title: "Unit 3",
+    subtitle: "Unit 3 · Decision Trees & CNN",
+    url: UNIT3_DECISION_TREE,
+    type: "pdf"
+  }
+
 ];
 
-function renderTextSlide(slide, color) {
-  const c = color || slide.color || 'gold';
-  const accent = c === 'teal' ? 'teal' : 'gold';
-  return `<div class="slide-text-inner">
-    <div class="slide-unit-tag">${slide.subtitle || ''}</div>
-    <div class="slide-title ${accent}">${slide.title}</div>
-    <div class="slide-body">${slide.body || ''}</div>
-  </div>`;
-}
 
-function renderImageSlide(slide) {
-  return `<div class="slide-img-wrap"><img src="${slide.src}" alt="CNN Slide ${slide.index+1}" loading="lazy"></div>`;
-}
+/* =========================================================
+   SOURCE VIEWER
+========================================================= */
 
-function renderSlide(unit, idx) {
-  const u = units[unit];
-  if (u.type === 'image') return renderImageSlide(u.slides[idx]);
-  return renderTextSlide(u.slides[idx]);
-}
+function updateSourceViewer() {
 
-function buildThumbs() {
-  const strip = document.getElementById('thumbStrip');
-  const u = units[currentUnit];
-  strip.innerHTML = u.slides.map((s, i) => {
-    const active = i === currentSlide ? 'active' : '';
-    if (u.type === 'image') {
-      return `<div><div class="thumb ${active}" onclick="goSlide(${i})"><img src="${s.src}" alt=""></div><div class="thumb-num">${i+1}</div></div>`;
+  const data = UNIT_DATA[currentUnit];
+
+  const frame =
+    document.getElementById("documentFrame");
+
+  const title =
+    document.getElementById("sourceTitle");
+
+  const subtitle =
+    document.getElementById("sourceSubtitle");
+
+  const open =
+    document.getElementById("sourceOpen");
+
+  const unit3Sources =
+    document.getElementById("unit3Sources");
+
+
+  /*
+     Unit 3 gets an internal second-level selector.
+  */
+
+  if (currentUnit === 2) {
+
+    unit3Sources.style.display = "flex";
+
+    if (currentUnit3Source === 0) {
+
+      title.textContent =
+        "Unit 3 — Decision Trees";
+
+      subtitle.textContent =
+        "unit_3-compressed.pdf";
+
+      frame.src =
+        UNIT3_DECISION_TREE;
+
+      open.href =
+        UNIT3_DECISION_TREE;
+
+    } else {
+
+      title.textContent =
+        "Unit 3 — CNN";
+
+      subtitle.textContent =
+        "unit_3CNN.pdf";
+
+      frame.src =
+        UNIT3_CNN;
+
+      open.href =
+        UNIT3_CNN;
+
     }
-    return `<div><div class="thumb ${active}" onclick="goSlide(${i})" style="font-size:8px;color:var(--white4);padding:4px;text-align:center">${i+1}</div><div class="thumb-num">${i+1}</div></div>`;
-  }).join('');
-}
 
-function updateUI() {
-  const u = units[currentUnit];
-  document.getElementById('slideDisplay').innerHTML = renderSlide(currentUnit, currentSlide);
-  document.getElementById('slideNum').textContent = currentSlide + 1;
-  document.getElementById('slideTotal').textContent = u.slides.length;
-  document.getElementById('btnPrev').disabled = currentSlide === 0;
-  document.getElementById('btnNext').disabled = currentSlide === u.slides.length - 1;
-  buildThumbs();
-  if (isFS) syncFS();
-}
+  } else {
 
-function nextSlide() { if (currentSlide < units[currentUnit].slides.length - 1) { currentSlide++; updateUI(); } }
-function prevSlide() { if (currentSlide > 0) { currentSlide--; updateUI(); } }
-function goSlide(i) { currentSlide = i; updateUI(); }
+    unit3Sources.style.display = "none";
 
-function switchUnit(idx) {
-  currentUnit = idx;
-  currentSlide = 0;
-  document.querySelectorAll('.unit-tab').forEach((t,i) => t.classList.toggle('active', i === idx));
-  updateUI();
-}
+    title.textContent =
+      data.title;
 
-function openFullscreen() {
-  isFS = true;
-  document.getElementById('fsOverlay').classList.add('open');
-  syncFS();
-}
-function closeFullscreen() {
-  isFS = false;
-  document.getElementById('fsOverlay').classList.remove('open');
-}
-function syncFS() {
-  const u = units[currentUnit];
-  document.getElementById('fsSlide').innerHTML = renderSlide(currentUnit, currentSlide);
-  document.getElementById('fsNum').textContent = currentSlide + 1;
-  document.getElementById('fsTotal').textContent = u.slides.length;
-}
+    subtitle.textContent =
+      data.subtitle;
 
-document.addEventListener('keydown', e => {
-  if (document.getElementById('page-slides').classList.contains('active') || isFS) {
-    if (e.key === 'ArrowRight') nextSlide();
-    if (e.key === 'ArrowLeft') prevSlide();
-    if (e.key === 'Escape') closeFullscreen();
+    frame.src =
+      data.url;
+
+    /*
+       For Unit 2, the Open Source button should
+       go to the actual PPTX file, not the Office viewer.
+    */
+
+    if (currentUnit === 1) {
+
+      open.href =
+        UNIT2_FILE;
+
+    } else {
+
+      open.href =
+        data.url;
+
+    }
+
   }
+
+}
+
+
+/* =========================================================
+   SWITCH UNIT
+========================================================= */
+
+function switchUnit(index) {
+
+  currentUnit = index;
+
+  currentUnit3Source = 0;
+
+  document
+    .querySelectorAll(".unit-tab")
+    .forEach((tab, i) => {
+
+      tab.classList.toggle(
+        "active",
+        i === index
+      );
+
+    });
+
+
+  document
+    .querySelectorAll(".sub-source")
+    .forEach((tab, i) => {
+
+      tab.classList.toggle(
+        "active",
+        i === 0
+      );
+
+    });
+
+
+  updateSourceViewer();
+
+}
+
+
+/* =========================================================
+   SWITCH UNIT 3 SOURCE
+========================================================= */
+
+function switchUnit3Source(index) {
+
+  currentUnit3Source = index;
+
+  document
+    .querySelectorAll(".sub-source")
+    .forEach((tab, i) => {
+
+      tab.classList.toggle(
+        "active",
+        i === index
+      );
+
+    });
+
+
+  updateSourceViewer();
+
+}
+
+
+/* =========================================================
+   KEYBOARD SHORTCUTS
+========================================================= */
+
+document.addEventListener("keydown", function(e) {
+
+  if (
+    document
+      .getElementById("page-slides")
+      .classList
+      .contains("active")
+  ) {
+
+    if (e.key === "1") {
+      switchUnit(0);
+    }
+
+    if (e.key === "2") {
+      switchUnit(1);
+    }
+
+    if (e.key === "3") {
+      switchUnit(2);
+    }
+
+  }
+
 });
 
-// ====================== QUIZ DATA ======================
+
+/* =========================================================
+   QUIZ DATA
+========================================================= */
+
 const SEC_A = [
-  {q:"What does 'Prediction Effect' refer to in Predictive Analytics?",opts:["The algorithm's training accuracy","All impacts and outcomes when predictions are used in decision-making","The speed of model inference","The number of features used in a model"],ans:1},
-  {q:"Which of the following is an example of a POSITIVE Prediction Effect?",opts:["Bank rejects loan → customer's situation worsens","Hospital predicts high-risk patient → provides treatment → patient recovers","Model predicts high demand but stock runs out","Employee resigns after performance prediction"],ans:1},
-  {q:"In the deployment pipeline, which step comes immediately after Data Cleaning?",opts:["Model Deployment","Validate Model","Data Analysis (EDA)","Define Problem Statement"],ans:2},
-  {q:"CHAID selects the best split feature using:",opts:["Gini Impurity","Variance Reduction","Chi-square statistical test","Entropy calculation"],ans:2},
-  {q:"In the Play Tennis CHAID example, which feature has the highest Chi-square value and is selected as the root node?",opts:["Temperature (2.569)","Wind (1.604)","Humidity (3.207)","Outlook (4.092)"],ans:3},
-  {q:"Gini Impurity of a perfectly pure node (all samples belong to one class) is:",opts:["1","0.5","0","0.25"],ans:2},
-  {q:"Which DT optimization technique would you use to prevent OVERFITTING?",opts:["Increase maximum depth","Decrease minimum samples for a split","Set a minimum number of samples for terminal nodes","Remove all constraints"],ans:2},
-  {q:"In Predictive Analytics ethics, 'Informed Consent' means:",opts:["The model must explain its predictions","Users agree to share their data; no hidden usage","The government approves the model","The ML engineer validates the data"],ans:1},
-  {q:"Variance Reduction as a splitting criterion is best suited for:",opts:["Classification with categorical targets","Regression with continuous target variables","Binary classification only","Clustering tasks"],ans:1},
-  {q:"Which of the following describes BATCH deployment?",opts:["Predictions made immediately on each new transaction","Model runs directly on IoT device","Data collected over time, predictions generated periodically","Model hosted on cloud, instant response"],ans:2},
+
+  {
+    q:"What does 'Prediction Effect' refer to in Predictive Analytics?",
+
+    opts:[
+      "The algorithm's training accuracy",
+      "All impacts and outcomes when predictions are used in decision-making",
+      "The speed of model inference",
+      "The number of features used in a model"
+    ],
+
+    ans:1
+  },
+
+  {
+    q:"Which of the following is an example of a POSITIVE Prediction Effect?",
+
+    opts:[
+      "Bank rejects loan → customer's situation worsens",
+      "Hospital predicts high-risk patient → provides treatment → patient recovers",
+      "Model predicts high demand but stock runs out",
+      "Employee resigns after performance prediction"
+    ],
+
+    ans:1
+  },
+
+  {
+    q:"In the deployment pipeline, which step comes immediately after Data Cleaning?",
+
+    opts:[
+      "Model Deployment",
+      "Validate Model",
+      "Data Analysis (EDA)",
+      "Define Problem Statement"
+    ],
+
+    ans:2
+  },
+
+  {
+    q:"CHAID selects the best split feature using:",
+
+    opts:[
+      "Gini Impurity",
+      "Variance Reduction",
+      "Chi-square statistical test",
+      "Entropy calculation"
+    ],
+
+    ans:2
+  },
+
+  {
+    q:"In the Play Tennis CHAID example, which feature has the highest Chi-square value and is selected as the root node?",
+
+    opts:[
+      "Temperature (2.569)",
+      "Wind (1.604)",
+      "Humidity (3.207)",
+      "Outlook (4.092)"
+    ],
+
+    ans:3
+  },
+
+  {
+    q:"Gini Impurity of a perfectly pure node (all samples belong to one class) is:",
+
+    opts:[
+      "1",
+      "0.5",
+      "0",
+      "0.25"
+    ],
+
+    ans:2
+  },
+
+  {
+    q:"Which DT optimization technique would you use to prevent OVERFITTING?",
+
+    opts:[
+      "Increase maximum depth",
+      "Decrease minimum samples for a split",
+      "Set a minimum number of samples for terminal nodes",
+      "Remove all constraints"
+    ],
+
+    ans:2
+  },
+
+  {
+    q:"In Predictive Analytics ethics, 'Informed Consent' means:",
+
+    opts:[
+      "The model must explain its predictions",
+      "Users agree to share their data; no hidden usage",
+      "The government approves the model",
+      "The ML engineer validates the data"
+    ],
+
+    ans:1
+  },
+
+  {
+    q:"Variance Reduction as a splitting criterion is best suited for:",
+
+    opts:[
+      "Classification with categorical targets",
+      "Regression with continuous target variables",
+      "Binary classification only",
+      "Clustering tasks"
+    ],
+
+    ans:1
+  },
+
+  {
+    q:"Which of the following describes BATCH deployment?",
+
+    opts:[
+      "Predictions made immediately on each new transaction",
+      "Model runs directly on IoT device",
+      "Data collected over time, predictions generated periodically",
+      "Model hosted on cloud, instant response"
+    ],
+
+    ans:2
+  }
+
 ];
+
+
+/* =========================================================
+   SECTION B
+========================================================= */
 
 const SEC_B = [
+
   {
-    qn:"Q1",q:"Define Prediction Effect and explain the stages: Prediction → Decision → Action → Outcome → New Data with a real-world example.",
+    qn:"Q1",
+
+    q:"Define Prediction Effect and explain the stages: Prediction → Decision → Action → Outcome → New Data with a real-world example.",
+
     parts:[
-      {label:"a",q:"Define Prediction Effect and state its importance in Predictive Analytics. (2.5 marks)",
-       answer:`<strong>Definition:</strong> Prediction Effect refers to all overall impacts, outcomes, and changes that occur when predictions are used in decision-making. It describes how predictive analytics influences performance, reduces errors, and enhances future outcomes.<br><br><strong>Importance:</strong> Predictive analytics should be evaluated not only by prediction accuracy but also by its real-world impact. A prediction alone is not enough — the resulting intervention can change the very outcome being predicted (e.g., preventing an attack, improving student performance).`},
-      {label:"b",q:"Explain the Positive and Negative Prediction Effects with one example each. (2.5 marks)",
-       answer:`<strong>Positive Prediction Effect:</strong> A prediction leads to an action that improves the outcome.<br>Example: A university predicts student failure → provides extra coaching → student passes.<br><br><strong>Negative Prediction Effect:</strong> A prediction leads to an action that worsens the outcome.<br>Example: A bank predicts a customer will default → rejects loan application → customer cannot obtain credit elsewhere → financial situation worsens. The prediction caused harm by triggering a restricting action.`},
+
+      {
+        label:"a",
+
+        q:"Define Prediction Effect and state its importance in Predictive Analytics. (2.5 marks)",
+
+        answer:`
+        <strong>Definition:</strong>
+        Prediction Effect refers to all overall impacts,
+        outcomes, and changes that occur when predictions
+        are used in decision-making.
+
+        <br><br>
+
+        <strong>Importance:</strong>
+        Predictive analytics should be evaluated not only
+        by prediction accuracy but also by its real-world impact.
+        `
+      },
+
+      {
+        label:"b",
+
+        q:"Explain the Positive and Negative Prediction Effects with one example each. (2.5 marks)",
+
+        answer:`
+        <strong>Positive Prediction Effect:</strong>
+        A prediction leads to an action that improves the outcome.
+
+        <br>
+        Example:
+        University predicts student failure →
+        provides extra coaching →
+        student passes.
+
+        <br><br>
+
+        <strong>Negative Prediction Effect:</strong>
+        A prediction leads to an action that worsens the outcome.
+
+        <br>
+        Example:
+        Bank predicts default →
+        rejects loan →
+        customer's financial situation worsens.
+        `
+      }
+
     ]
+
   },
+
+
   {
-    qn:"Q2",q:"Describe the complete deployment pipeline for a Predictive Analytics model, clearly explaining each step.",
+    qn:"Q2",
+
+    q:"Describe the complete deployment pipeline for a Predictive Analytics model, clearly explaining each step.",
+
     parts:[
-      {label:"a",q:"Explain steps 1–4 of the deployment pipeline (Problem Definition to Data Analysis). (2.5 marks)",
-       answer:`<strong>1. Define Problem Statement:</strong> Clearly identify the business problem and the type of prediction required. Example: Predict student exam failure.<br><br><strong>2. Data Collection:</strong> Gather relevant data from sources — databases, sensors, surveys, logs. Model quality depends on data quality and quantity.<br><br><strong>3. Data Cleaning:</strong> Remove noise, missing values, duplicates, and incorrect entries. Convert raw data to a usable format. This improves model reliability.<br><br><strong>4. Data Analysis (EDA):</strong> Perform Exploratory Data Analysis — identify patterns, correlations, visualize distributions, and check relationships between variables.`},
-      {label:"b",q:"Explain steps 5–8 (Model Building to Monitoring) with a brief note on Real-Time vs. Batch deployment. (2.5 marks)",
-       answer:`<strong>5. Build Model:</strong> Apply appropriate ML algorithms (Regression, Decision Trees, SVM, Neural Networks). Train on cleaned data and serialize/save the model.<br><br><strong>6. Validate:</strong> Test on unseen data using Accuracy, Precision, Recall, RMSE. Use cross-validation for reliability.<br><br><strong>7. Deploy:</strong> Integrate into web/mobile app or expose via API/cloud service. Model now accepts live data.<br><br><strong>8. Monitor:</strong> Continuously monitor accuracy, fairness, and prediction drift. Retrain with new data as needed.<br><br><strong>Real-Time vs Batch:</strong> Real-time — predictions made immediately (fraud detection); Batch — data collected and processed periodically (sales forecasting).`},
+
+      {
+        label:"a",
+
+        q:"Explain steps 1–4 of the deployment pipeline. (2.5 marks)",
+
+        answer:`
+        <strong>1. Define Problem Statement:</strong>
+        Clearly identify the business problem and the
+        prediction required.
+
+        <br><br>
+
+        <strong>2. Data Collection:</strong>
+        Gather relevant data from databases, sensors,
+        surveys and logs.
+
+        <br><br>
+
+        <strong>3. Data Cleaning:</strong>
+        Remove noise, missing values, duplicates and
+        incorrect entries.
+
+        <br><br>
+
+        <strong>4. Data Analysis:</strong>
+        Perform EDA, identify patterns, correlations
+        and relationships between variables.
+        `
+      },
+
+      {
+        label:"b",
+
+        q:"Explain steps 5–8 and briefly compare Real-Time and Batch deployment. (2.5 marks)",
+
+        answer:`
+        <strong>5. Build Model:</strong>
+        Apply appropriate ML algorithms and train on
+        cleaned data.
+
+        <br><br>
+
+        <strong>6. Validate:</strong>
+        Test using metrics such as Accuracy,
+        Precision, Recall and RMSE.
+
+        <br><br>
+
+        <strong>7. Deploy:</strong>
+        Integrate the model into a web/mobile application
+        or expose it through an API.
+
+        <br><br>
+
+        <strong>8. Monitor:</strong>
+        Continuously monitor accuracy, fairness and
+        prediction drift.
+
+        <br><br>
+
+        <strong>Real-Time:</strong>
+        Predictions happen immediately.
+
+        <br>
+
+        <strong>Batch:</strong>
+        Data is collected and processed periodically.
+        `
+      }
+
     ]
+
   },
+
+
   {
-    qn:"Q3",q:"Explain the Gini Impurity criterion used in Decision Trees with the formula, properties, and a worked example.",
+    qn:"Q3",
+
+    q:"Explain the Gini Impurity criterion used in Decision Trees with the formula, properties and a worked example.",
+
     parts:[
-      {label:"a",q:"Define Gini Impurity. State its formula, range, and interpretation. (2.5 marks)",
-       answer:`<strong>Definition:</strong> Gini Impurity measures how often a randomly chosen element from a set would be incorrectly classified.<br><br><strong>Formula:</strong> Gini = 1 − Σ(pᵢ)² where pᵢ is the proportion of class i at the node.<br><br><strong>Range:</strong> 0 to 0.5 (for binary classification).<br>- Gini = 0 → Perfectly pure node (all samples belong to one class).<br>- Gini = 0.5 → Maximum impurity (equal distribution of classes).<br><br><strong>Selection criterion:</strong> Feature with the lowest Weighted Gini Impurity is selected for the split.`},
-      {label:"b",q:"Using the Laptop Purchase dataset (3 Yes, 3 No), calculate the Gini Impurity of the root node and explain Weighted Gini. (2.5 marks)",
-       answer:`<strong>Root Node Gini:</strong> 3 Yes (p=0.5), 3 No (p=0.5) out of 6 records.<br>Gini(root) = 1 − (0.5)² − (0.5)² = 1 − 0.25 − 0.25 = <strong>0.5</strong><br><br><strong>Weighted Gini Impurity:</strong> For each feature split, calculate the Gini of each child node, then compute a weighted average:<br>Weighted Gini = (n_left/n_total) × Gini(left) + (n_right/n_total) × Gini(right)<br><br>The feature with the <strong>lowest Weighted Gini</strong> is selected as the split point — it produces the most pure sub-nodes.`},
+
+      {
+        label:"a",
+
+        q:"Define Gini Impurity. State its formula, range and interpretation. (2.5 marks)",
+
+        answer:`
+        <strong>Definition:</strong>
+        Gini Impurity measures how often a randomly chosen
+        element would be incorrectly classified.
+
+        <br><br>
+
+        <strong>Formula:</strong>
+        Gini = 1 − Σ(pᵢ)²
+
+        <br><br>
+
+        <strong>For binary classification:</strong>
+
+        Gini = 0 →
+        perfectly pure node.
+
+        <br>
+
+        Gini = 0.5 →
+        maximum impurity.
+
+        <br><br>
+
+        The feature with the lowest
+        Weighted Gini Impurity is selected.
+        `
+      },
+
+      {
+        label:"b",
+
+        q:"Using the Laptop Purchase dataset (3 Yes, 3 No), calculate the Gini Impurity of the root node and explain Weighted Gini. (2.5 marks)",
+
+        answer:`
+        <strong>Root Node:</strong>
+
+        3 Yes and 3 No.
+
+        Therefore:
+
+        p(Yes) = 0.5
+
+        p(No) = 0.5
+
+        <br><br>
+
+        Gini =
+        1 − (0.5)² − (0.5)²
+
+        <br>
+
+        = 1 − 0.25 − 0.25
+
+        <br>
+
+        = <strong>0.5</strong>
+
+        <br><br>
+
+        Weighted Gini is calculated by taking the
+        weighted average of the impurity of the child nodes.
+        The feature with the lowest weighted Gini is selected.
+        `
+      }
+
     ]
+
   },
+
+
   {
-    qn:"Q4",q:"Explain the CHAID algorithm and demonstrate how the Chi-square test is used to select the root node in a Decision Tree.",
+    qn:"Q4",
+
+    q:"Explain the CHAID algorithm and demonstrate how the Chi-square test is used to select the root node.",
+
     parts:[
-      {label:"a",q:"Explain CHAID and the Chi-square formula. List the steps for building a CHAID tree. (2.5 marks)",
-       answer:`<strong>CHAID (Chi-Square Automatic Interaction Detection):</strong> A decision tree algorithm that selects the feature with the strongest statistical association with the target variable using the Chi-square test.<br><br><strong>Formula:</strong> χ² = Σ (O − E)² / E, where O = Observed, E = Expected frequency.<br>Expected = Total / number of classes.<br><br><strong>Steps:</strong><br>1. Start with complete training data at the root.<br>2. Calculate χ² for each feature.<br>3. Select the feature with the highest χ² (lowest p-value) for splitting.<br>4. Repeat for each sub-node until variables are exhausted or stopping criteria are met.<br>5. Generate business rules for leaf nodes.`},
-      {label:"b",q:"Using the Play Tennis dataset, calculate the Chi-square value for the Outlook feature and explain why it is selected as the root. (2.5 marks)",
-       answer:`<strong>Outlook feature (3 classes: Sunny, Overcast, Rain):</strong><br>Total Yes = 9, Total No = 5, Total = 14 → Expected = Total/2<br><br>Sunny: Yes=2, No=3, Total=5, Expected=2.5 → χ²(Y)=(2−2.5)²/2.5=0.1 → adjusted = 0.316; χ²(N)=0.316<br>Overcast: Yes=4, No=0, Total=4, Expected=2.0 → χ²(Y)=1.414; χ²(N)=1.414<br>Rain: Yes=3, No=2, Total=5, Expected=2.5 → χ²=0.316+0.316<br><br><strong>χ²(Outlook) = 0.316+1.414+0.316+0.316+1.414+0.316 = 4.092</strong><br><br>Since Outlook (4.092) > Humidity (3.207) > Temperature (2.569) > Wind (1.604), <strong>Outlook is selected as the root node</strong>.`},
+
+      {
+        label:"a",
+
+        q:"Explain CHAID and the Chi-square formula. (2.5 marks)",
+
+        answer:`
+        <strong>CHAID:</strong>
+        Chi-Square Automatic Interaction Detection.
+
+        It selects the feature with the strongest
+        statistical association with the target variable.
+
+        <br><br>
+
+        <strong>Formula:</strong>
+
+        χ² = Σ (O − E)² / E
+
+        <br><br>
+
+        O = Observed frequency
+
+        <br>
+
+        E = Expected frequency
+
+        <br><br>
+
+        The feature with the highest Chi-square
+        or lowest p-value is selected for splitting.
+        `
+      },
+
+      {
+        label:"b",
+
+        q:"Using the Play Tennis dataset, explain why Outlook is selected as the root.",
+
+        answer:`
+        In the Play Tennis example:
+
+        <br><br>
+
+        Outlook = 4.092
+
+        <br>
+
+        Humidity = 3.207
+
+        <br>
+
+        Temperature = 2.569
+
+        <br>
+
+        Wind = 1.604
+
+        <br><br>
+
+        Since Outlook has the highest Chi-square
+        value, it is selected as the root node.
+        `
+      }
+
     ]
+
   },
+
+
   {
-    qn:"Q5",q:"Discuss the ethical responsibilities in Predictive Analytics and explain the Data Effect on model performance.",
+    qn:"Q5",
+
+    q:"Discuss the ethical responsibilities in Predictive Analytics and explain the Data Effect on model performance.",
+
     parts:[
-      {label:"a",q:"List and explain any FIVE ethical principles in Predictive Analytics. (2.5 marks)",
-       answer:`<strong>1. Privacy & Data Protection:</strong> Collect only necessary data; follow GDPR; encrypt storage; limit access to authorized personnel only.<br><br><strong>2. Transparency:</strong> Users must know how and why predictions are made. Avoid black-box systems. Especially critical in Healthcare, Finance, Legal.<br><br><strong>3. Avoiding Bias:</strong> Models must not produce unfair outcomes based on gender, caste, race, religion, or age. Regular bias testing is mandatory.<br><br><strong>4. Informed Consent:</strong> Users must explicitly agree to data collection and usage. No hidden or unauthorized data processing.<br><br><strong>5. Human Oversight:</strong> Critical decisions (medical diagnosis, credit scoring, legal judgements) must involve human review — complete automation is unethical.`},
-      {label:"b",q:"Explain any FOUR types of Data Effects and their impact on model accuracy. (2.5 marks)",
-       answer:`<strong>1. Data Quality Effect:</strong> Clean, correct, complete data → accurate predictions. Noisy/missing data → unreliable, inaccurate outputs. Model accuracy depends directly on data quality.<br><br><strong>2. Data Quantity Effect:</strong> Too little data → Underfitting (model can't learn patterns). Adequate data → better accuracy. Very large data → needs more compute resources.<br><br><strong>3. Data Diversity Effect:</strong> Diverse data (multiple demographics, regions) → less biased, more generalizable model. Training on a single group leads to poor performance on others (e.g., face recognition trained on one demographic).<br><br><strong>4. Data Timeline Effect:</strong> Outdated data → stale predictions that don't match current trends. Regularly updated data ensures model stays accurate and relevant.`},
+
+      {
+        label:"a",
+
+        q:"List and explain any FIVE ethical principles. (2.5 marks)",
+
+        answer:`
+        <strong>1. Privacy & Data Protection:</strong>
+        Collect only necessary data and protect it.
+
+        <br><br>
+
+        <strong>2. Transparency:</strong>
+        Users should know how and why predictions are made.
+
+        <br><br>
+
+        <strong>3. Avoiding Bias:</strong>
+        Models should not produce unfair outcomes.
+
+        <br><br>
+
+        <strong>4. Informed Consent:</strong>
+        Users must agree to data collection and usage.
+
+        <br><br>
+
+        <strong>5. Human Oversight:</strong>
+        Critical decisions should involve human review.
+        `
+      },
+
+      {
+        label:"b",
+
+        q:"Explain any FOUR types of Data Effects and their impact on model accuracy. (2.5 marks)",
+
+        answer:`
+        <strong>1. Data Quality Effect:</strong>
+        Clean and correct data improves predictions.
+
+        <br><br>
+
+        <strong>2. Data Quantity Effect:</strong>
+        Too little data can cause underfitting.
+
+        <br><br>
+
+        <strong>3. Data Diversity Effect:</strong>
+        Diverse data improves generalization and fairness.
+
+        <br><br>
+
+        <strong>4. Data Timeline Effect:</strong>
+        Outdated data can result in stale predictions.
+        `
+      }
+
     ]
+
   },
+
+
   {
-    qn:"Q6",q:"Explain the methods used to optimize Decision Tree performance and discuss overfitting vs. underfitting.",
+    qn:"Q6",
+
+    q:"Explain the methods used to optimize Decision Tree performance and discuss overfitting vs. underfitting.",
+
     parts:[
-      {label:"a",q:"Define overfitting and underfitting in the context of Decision Trees. How does tree depth affect both? (2.5 marks)",
-       answer:`<strong>Overfitting:</strong> When a DT grows without constraints, it reaches perfectly pure nodes — 100% training accuracy. It memorizes the training data and performs poorly on unseen test data. The model captures noise as patterns.<br><br><strong>Underfitting:</strong> When excessive constraints are applied (e.g., max depth=1), the model is too simple. It can't capture meaningful patterns even in training data, resulting in poor accuracy on both training and test sets.<br><br><strong>Tree Depth Impact:</strong> Higher depth → more complex tree → overfitting risk. Lower depth → simpler tree → underfitting risk. The optimal depth is problem-specific and is found through validation/cross-validation.`},
-      {label:"b",q:"List and explain the 4 hyperparameters used to control Decision Tree growth. (2.5 marks)",
-       answer:`<strong>1. Minimum Samples for a Node Split:</strong> Minimum number of samples a node must have to be eligible for splitting. Higher value → prevents overfitting (fewer, broader splits). Too high → underfitting (tree stops too early).<br><br><strong>2. Minimum Samples for Terminal (Leaf) Nodes:</strong> Minimum samples required at a leaf. Higher value → controls overfitting (leaves represent more general patterns). Too high → parent node becomes the leaf, underfitting.<br><br><strong>3. Maximum Depth of Tree:</strong> Maximum number of levels in the tree. Higher depth → risk of overfitting. Lower depth → risk of underfitting. Set based on validation performance.<br><br><strong>4. Maximum Number of Terminal Nodes:</strong> Caps the total number of leaf nodes in the tree. Acts as a complexity control, similar to depth — prevents the tree from growing into every possible split.`},
+
+      {
+        label:"a",
+
+        q:"Define overfitting and underfitting in Decision Trees. How does tree depth affect both? (2.5 marks)",
+
+        answer:`
+        <strong>Overfitting:</strong>
+        The tree becomes too complex and memorizes
+        training data, performing poorly on unseen data.
+
+        <br><br>
+
+        <strong>Underfitting:</strong>
+        The tree is too simple and cannot capture
+        meaningful patterns.
+
+        <br><br>
+
+        <strong>Tree Depth:</strong>
+
+        Higher depth →
+        more complexity →
+        greater overfitting risk.
+
+        <br>
+
+        Lower depth →
+        simpler tree →
+        greater underfitting risk.
+        `
+      },
+
+      {
+        label:"b",
+
+        q:"List and explain the four hyperparameters used to control Decision Tree growth. (2.5 marks)",
+
+        answer:`
+        <strong>1. Minimum Samples for a Node Split:</strong>
+        Controls when a node can be split.
+
+        <br><br>
+
+        <strong>2. Minimum Samples for Terminal Nodes:</strong>
+        Controls the minimum number of samples in leaves.
+
+        <br><br>
+
+        <strong>3. Maximum Depth:</strong>
+        Limits the number of levels in the tree.
+
+        <br><br>
+
+        <strong>4. Maximum Number of Terminal Nodes:</strong>
+        Limits the total number of leaf nodes.
+        `
+      }
+
     ]
-  },
+
+  }
+
 ];
 
-// ====================== RENDER QUIZ ======================
-function renderSecA() {
-  const container = document.getElementById('secA');
-  container.innerHTML = SEC_A.map((q,qi) => `
-    <div class="qa-item" id="qa-${qi}">
-      <div class="qa-q"><span class="qn">Q${qi+1}.</span>${q.q}</div>
-      <div class="qa-opts">
-        ${q.opts.map((o,oi)=>`<button class="qa-opt" id="qa-${qi}-${oi}" onclick="selectOpt(${qi},${oi})">${String.fromCharCode(65+oi)}) ${o}</button>`).join('')}
-      </div>
-      <div class="qa-feedback" id="qa-fb-${qi}"></div>
-    </div>
-  `).join('');
-}
+
+/* =========================================================
+   SECTION A RENDERING
+========================================================= */
 
 let secAAnswers = {};
-function selectOpt(qi, oi) {
-  if (secAAnswers[qi] !== undefined) return;
-  document.querySelectorAll(`[id^="qa-${qi}-"]`).forEach(b => b.disabled = true);
-  secAAnswers[qi] = oi;
-  const btn = document.getElementById(`qa-${qi}-${oi}`);
-  const correct = SEC_A[qi].ans === oi;
-  btn.classList.add(correct ? 'selected-correct' : 'selected-wrong');
-  if (!correct) document.getElementById(`qa-${qi}-${SEC_A[qi].ans}`).classList.add('reveal-correct');
-  const fb = document.getElementById(`qa-fb-${qi}`);
-  fb.className = `qa-feedback show ${correct ? 'ok' : 'bad'}`;
-  fb.textContent = correct ? '✓ Correct!' : `✗ Wrong. Correct: ${String.fromCharCode(65+SEC_A[qi].ans)}) ${SEC_A[qi].opts[SEC_A[qi].ans]}`;
-  document.getElementById(`qa-${qi}`).classList.add(correct ? 'correct' : 'wrong');
+
+
+function renderSecA() {
+
+  const container =
+    document.getElementById("secA");
+
+
+  container.innerHTML =
+    SEC_A.map((q, qi) => {
+
+      return `
+
+        <div
+          class="qa-item"
+          id="qa-${qi}">
+
+          <div class="qa-q">
+
+            <span class="qn">
+              Q${qi + 1}.
+            </span>
+
+            ${q.q}
+
+          </div>
+
+
+          <div class="qa-opts">
+
+            ${q.opts.map((option, oi) => `
+
+              <button
+                class="qa-opt"
+                id="qa-${qi}-${oi}"
+                onclick="selectOpt(${qi},${oi})">
+
+                ${String.fromCharCode(65 + oi)})
+                ${option}
+
+              </button>
+
+            `).join("")}
+
+          </div>
+
+
+          <div
+            class="qa-feedback"
+            id="qa-fb-${qi}">
+          </div>
+
+        </div>
+
+      `;
+
+    }).join("");
+
 }
+
+
+function selectOpt(qi, oi) {
+
+  if (
+    secAAnswers[qi] !== undefined
+  ) {
+    return;
+  }
+
+
+  document
+    .querySelectorAll(
+      `[id^="qa-${qi}-"]`
+    )
+    .forEach(button => {
+
+      button.disabled = true;
+
+    });
+
+
+  secAAnswers[qi] = oi;
+
+
+  const button =
+    document.getElementById(
+      `qa-${qi}-${oi}`
+    );
+
+
+  const correct =
+    SEC_A[qi].ans === oi;
+
+
+  button.classList.add(
+    correct
+      ? "selected-correct"
+      : "selected-wrong"
+  );
+
+
+  if (!correct) {
+
+    document
+      .getElementById(
+        `qa-${qi}-${SEC_A[qi].ans}`
+      )
+      .classList.add(
+        "reveal-correct"
+      );
+
+  }
+
+
+  const feedback =
+    document.getElementById(
+      `qa-fb-${qi}`
+    );
+
+
+  feedback.className =
+    `qa-feedback show ${
+      correct ? "ok" : "bad"
+    }`;
+
+
+  feedback.textContent =
+    correct
+      ? "✓ Correct!"
+      : `✗ Wrong. Correct: ${
+          String.fromCharCode(
+            65 + SEC_A[qi].ans
+          )
+        }) ${
+          SEC_A[qi].opts[
+            SEC_A[qi].ans
+          ]
+        }`;
+
+
+  document
+    .getElementById(`qa-${qi}`)
+    .classList.add(
+      correct ? "correct" : "wrong"
+    );
+
+}
+
 
 function submitSecA() {
+
   let score = 0;
-  SEC_A.forEach((q,i) => { if (secAAnswers[i] === q.ans) score++; });
-  const bar = document.getElementById('secAScore');
-  document.getElementById('secAScoreNum').textContent = `${score}/10`;
-  bar.classList.add('show');
-  bar.scrollIntoView({behavior:'smooth',block:'nearest'});
+
+
+  SEC_A.forEach((question, index) => {
+
+    if (
+      secAAnswers[index] === question.ans
+    ) {
+      score++;
+    }
+
+  });
+
+
+  document
+    .getElementById("secAScoreNum")
+    .textContent =
+    `${score}/10`;
+
+
+  document
+    .getElementById("secAScore")
+    .classList.add("show");
+
 }
+
 
 function resetSecA() {
+
   secAAnswers = {};
-  document.getElementById('secAScore').classList.remove('show');
+
+  document
+    .getElementById("secAScore")
+    .classList.remove("show");
+
   renderSecA();
+
 }
 
-// Section B
-let selectedQs = new Set([0,1,2,3]);
+
+/* =========================================================
+   SECTION B
+========================================================= */
+
+let selectedQs =
+  new Set([0,1,2,3]);
+
+
 function renderSecB() {
-  const container = document.getElementById('secB');
-  container.innerHTML = SEC_B.map((q,qi) => {
-    const sel = selectedQs.has(qi);
-    return `
-    <div class="qb-item ${sel?'':'deselected'}" id="qb-${qi}">
-      <div class="qb-header">
-        <div>
-          <div class="qb-qn">${q.qn} — 5 Marks</div>
-          <div class="qb-q">${q.q}</div>
+
+  const container =
+    document.getElementById("secB");
+
+
+  container.innerHTML =
+    SEC_B.map((question, qi) => {
+
+      const selected =
+        selectedQs.has(qi);
+
+
+      return `
+
+        <div
+          class="qb-item ${
+            selected
+              ? ""
+              : "deselected"
+          }"
+          id="qb-${qi}">
+
+
+          <div class="qb-header">
+
+            <div>
+
+              <div class="qb-qn">
+                ${question.qn}
+                — 5 Marks
+              </div>
+
+              <div class="qb-q">
+                ${question.q}
+              </div>
+
+            </div>
+
+
+            <button
+              class="qb-select-btn ${
+                selected
+                  ? "selected"
+                  : ""
+              }"
+              onclick="toggleQ(${qi})">
+
+              ${
+                selected
+                  ? "✓ Selected"
+                  : "Select"
+              }
+
+            </button>
+
+          </div>
+
+
+          <div class="qb-parts">
+
+            ${question.parts.map(
+              (part, pi) => `
+
+              <div class="qb-part">
+
+                <div class="qb-part-label">
+                  Part (${part.label})
+                  — 2.5 Marks
+                </div>
+
+
+                <div class="qb-part-q">
+                  ${part.q}
+                </div>
+
+
+                <textarea
+                  class="qb-textarea"
+                  placeholder="Type your answer here..."
+                  id="qb-ta-${qi}-${pi}">
+                </textarea>
+
+
+                <button
+                  class="qb-reveal-btn"
+                  onclick="toggleAnswer(${qi},${pi})">
+
+                  Show Model Answer
+
+                </button>
+
+
+                <div
+                  class="qb-answer"
+                  id="qb-ans-${qi}-${pi}">
+
+                  ${part.answer}
+
+                </div>
+
+              </div>
+
+            `).join("")}
+
+          </div>
+
         </div>
-        <button class="qb-select-btn ${sel?'selected':''}" onclick="toggleQ(${qi})">${sel?'✓ Selected':'Select'}</button>
-      </div>
-      <div class="qb-parts">
-        ${q.parts.map((p,pi)=>`
-        <div class="qb-part">
-          <div class="qb-part-label">Part (${p.label}) — 2.5 Marks</div>
-          <div class="qb-part-q">${p.q}</div>
-          <textarea class="qb-textarea" placeholder="Type your answer here..." id="qb-ta-${qi}-${pi}"></textarea>
-          <button class="qb-reveal-btn" onclick="toggleAnswer(${qi},${pi})">Show Model Answer</button>
-          <div class="qb-answer" id="qb-ans-${qi}-${pi}">${p.answer}</div>
-        </div>`).join('')}
-      </div>
-    </div>`;
-  }).join('');
+
+      `;
+
+    }).join("");
+
 }
+
 
 function toggleQ(qi) {
-  if (selectedQs.has(qi)) {
-    if (selectedQs.size <= 4) { selectedQs.delete(qi); }
-    else { selectedQs.delete(qi); }
-  } else {
-    if (selectedQs.size >= 4) {
-      alert('You can only select 4 questions. Deselect one first.');
-      return;
+
+  if (
+    selectedQs.has(qi)
+  ) {
+
+    if (
+      selectedQs.size > 4
+    ) {
+
+      selectedQs.delete(qi);
+
     }
+
+  } else {
+
+    if (
+      selectedQs.size >= 4
+    ) {
+
+      alert(
+        "You can only select 4 questions. Deselect one first."
+      );
+
+      return;
+
+    }
+
     selectedQs.add(qi);
+
   }
+
+
   renderSecB();
+
 }
+
 
 function toggleAnswer(qi, pi) {
-  const el = document.getElementById(`qb-ans-${qi}-${pi}`);
-  el.classList.toggle('show');
-  const btn = el.previousElementSibling;
-  btn.textContent = el.classList.contains('show') ? 'Hide Model Answer' : 'Show Model Answer';
+
+  const answer =
+    document.getElementById(
+      `qb-ans-${qi}-${pi}`
+    );
+
+
+  answer.classList.toggle("show");
+
+
+  const button =
+    answer.previousElementSibling;
+
+
+  button.textContent =
+    answer.classList.contains("show")
+      ? "Hide Model Answer"
+      : "Show Model Answer";
+
 }
 
-// Page switching
+
+/* =========================================================
+   PAGE SWITCHING
+========================================================= */
+
 function showPage(page) {
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.getElementById(`page-${page}`).classList.add('active');
-  document.querySelectorAll('.nav-tab').forEach((t,i) => t.classList.toggle('active', ['slides','quiz'][i] === page));
+
+  document
+    .querySelectorAll(".page")
+    .forEach(p => {
+
+      p.classList.remove("active");
+
+    });
+
+
+  document
+    .getElementById(`page-${page}`)
+    .classList.add("active");
+
+
+  document
+    .querySelectorAll(".nav-tab")
+    .forEach((tab, index) => {
+
+      tab.classList.toggle(
+        "active",
+        ["slides","quiz"][index] === page
+      );
+
+    });
+
 }
 
-// Init
-updateUI();
+
+/* =========================================================
+   INITIALIZE
+========================================================= */
+
+updateSourceViewer();
+
 renderSecA();
+
 renderSecB();
+
 </script>
+
 </body>
 </html>
