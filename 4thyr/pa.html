@@ -275,42 +275,6 @@ body::before {
   background:#111;
 }
 
-/* ================= UNIT 3 SOURCE SWITCHER ================= */
-
-.sub-source-tabs {
-  display:flex;
-  gap:6px;
-  padding:1rem 1.5rem;
-  border-bottom:1px solid var(--border);
-  background:var(--bg);
-}
-
-.sub-source {
-  padding:7px 13px;
-
-  background:var(--bg3);
-  border:1px solid var(--border2);
-  color:var(--white3);
-
-  border-radius:4px;
-
-  font-family:'JetBrains Mono',monospace;
-  font-size:9px;
-
-  cursor:pointer;
-}
-
-.sub-source:hover {
-  color:var(--white);
-  border-color:var(--purple-border);
-}
-
-.sub-source.active {
-  color:var(--purple);
-  background:var(--purple-dim);
-  border-color:var(--purple-border);
-}
-
 /* ================= QUIZ ================= */
 
 .quiz-wrap {
@@ -892,30 +856,7 @@ body::before {
           ↗ Open Source
         </a>
 
-      </div>
-
-
-      <!-- UNIT 3 HAS TWO FILES -->
-
-      <div
-        class="sub-source-tabs"
-        id="unit3Sources"
-        style="display:none">
-
-        <button
-          class="sub-source active"
-          onclick="switchUnit3Source(0)">
-          Decision Trees
-        </button>
-
-        <button
-          class="sub-source"
-          onclick="switchUnit3Source(1)">
-          CNN
-        </button>
-
-      </div>
-
+     
 
       <iframe
         id="documentFrame"
@@ -1083,44 +1024,38 @@ const BASE =
 
 
 /*
-   Unit 1
-   PPTX files cannot be displayed directly inside
-   a normal browser iframe.
-
-   Microsoft Office's online viewer is therefore used.
+   RAW PPTX FILES
+   ----------------
+   These are the actual PowerPoint files stored on GitHub.
 */
+
 const UNIT1_FILE =
   BASE + "unit_1.pptx";
 
-
-/*
-   Unit 2
-
-   PPTX files cannot be displayed directly inside
-   a normal browser iframe.
-
-   Microsoft Office's online viewer is therefore used.
-*/
 const UNIT2_FILE =
   BASE + "unit-2.pptx";
 
-const UNIT2_VIEWER =
-  "https://view.officeapps.live.com/op/view.aspx?src="
-  + encodeURIComponent(UNIT2_FILE);
+const UNIT3_FILE =
+  BASE + "unit_3.pptx";
 
 
 /*
-   Unit 3
-   PPTX files cannot be displayed directly inside
-   a normal browser iframe.
+   MICROSOFT OFFICE ONLINE VIEWER
+   -------------------------------
+   Browsers cannot natively display PPTX files
+   inside an iframe.
 
-   Microsoft Office's online viewer is therefore used.
+   Office Viewer can display public PPTX files.
 */
-const UNIT3_DECISION_TREE =
-  BASE + "unit_3.pptx";
 
-const UNIT3_CNN =
-  BASE + "unit_3CNN.pdf";
+function officeViewer(file) {
+
+  return (
+    "https://view.officeapps.live.com/op/view.aspx?src="
+    + encodeURIComponent(file)
+  );
+
+}
 
 
 /* =========================================================
@@ -1128,30 +1063,44 @@ const UNIT3_CNN =
 ========================================================= */
 
 let currentUnit = 0;
-let currentUnit3Source = 0;
 
+
+/* =========================================================
+   UNIT DATA
+========================================================= */
 
 const UNIT_DATA = [
 
   {
     title: "Unit 1",
-    subtitle: "Unit 1 · Predictive Analysis",
-    url: UNIT1_FILE,
-    type: "pdf"
+
+    subtitle:
+      "Unit 1 · Predictive Analysis",
+
+    file:
+      UNIT1_FILE
   },
+
 
   {
     title: "Unit 2",
-    subtitle: "Unit 2 · Prediction Effect, Deployment & Data Ethics",
-    url: UNIT2_VIEWER,
-    type: "pptx"
+
+    subtitle:
+      "Unit 2 · Prediction Effect, Deployment & Data Ethics",
+
+    file:
+      UNIT2_FILE
   },
+
 
   {
     title: "Unit 3",
-    subtitle: "Unit 3 · Decision Trees & CNN",
-    url: UNIT3_DECISION_TREE,
-    type: "pdf"
+
+    subtitle:
+      "Unit 3 · Decision Trees & CNN",
+
+    file:
+      UNIT3_FILE
   }
 
 ];
@@ -1163,93 +1112,89 @@ const UNIT_DATA = [
 
 function updateSourceViewer() {
 
-  const data = UNIT_DATA[currentUnit];
+  const data =
+    UNIT_DATA[currentUnit];
+
 
   const frame =
-    document.getElementById("documentFrame");
+    document.getElementById(
+      "documentFrame"
+    );
+
 
   const title =
-    document.getElementById("sourceTitle");
+    document.getElementById(
+      "sourceTitle"
+    );
+
 
   const subtitle =
-    document.getElementById("sourceSubtitle");
+    document.getElementById(
+      "sourceSubtitle"
+    );
+
 
   const open =
-    document.getElementById("sourceOpen");
-
-  const unit3Sources =
-    document.getElementById("unit3Sources");
+    document.getElementById(
+      "sourceOpen"
+    );
 
 
   /*
-     Unit 3 gets an internal second-level selector.
+     Hide the old Unit 3 sub-selector.
+     Unit 3 is now one complete PPT.
   */
 
-  if (currentUnit === 2) {
+  const unit3Sources =
+    document.getElementById(
+      "unit3Sources"
+    );
 
-    unit3Sources.style.display = "flex";
+  if (unit3Sources) {
 
-    if (currentUnit3Source === 0) {
-
-      title.textContent =
-        "Unit 3 — Decision Trees";
-
-      subtitle.textContent =
-        "unit_3-compressed.pdf";
-
-      frame.src =
-        UNIT3_DECISION_TREE;
-
-      open.href =
-        UNIT3_DECISION_TREE;
-
-    } else {
-
-      title.textContent =
-        "Unit 3 — CNN";
-
-      subtitle.textContent =
-        "unit_3CNN.pdf";
-
-      frame.src =
-        UNIT3_CNN;
-
-      open.href =
-        UNIT3_CNN;
-
-    }
-
-  } else {
-
-    unit3Sources.style.display = "none";
-
-    title.textContent =
-      data.title;
-
-    subtitle.textContent =
-      data.subtitle;
-
-    frame.src =
-      data.url;
-
-    /*
-       For Unit 2, the Open Source button should
-       go to the actual PPTX file, not the Office viewer.
-    */
-
-    if (currentUnit === 1) {
-
-      open.href =
-        UNIT2_FILE;
-
-    } else {
-
-      open.href =
-        data.url;
-
-    }
+    unit3Sources.style.display =
+      "none";
 
   }
+
+
+  /*
+     Update heading.
+  */
+
+  title.textContent =
+    data.title;
+
+
+  subtitle.textContent =
+    data.subtitle +
+    " · PowerPoint";
+
+
+  /*
+     IMPORTANT:
+     The iframe receives the Office Viewer URL,
+     NOT the raw PPTX URL.
+  */
+
+  frame.src =
+    officeViewer(
+      data.file
+    );
+
+
+  /*
+     Open Source button also opens
+     the Office Viewer.
+
+     Therefore clicking it will NOT
+     immediately download the PPTX.
+  */
+
+  open.href =
+    officeViewer(
+      data.file
+    );
 
 }
 
@@ -1260,49 +1205,16 @@ function updateSourceViewer() {
 
 function switchUnit(index) {
 
-  currentUnit = index;
+  currentUnit =
+    index;
 
-  currentUnit3Source = 0;
+
+  /*
+     Update active unit tab.
+  */
 
   document
     .querySelectorAll(".unit-tab")
-    .forEach((tab, i) => {
-
-      tab.classList.toggle(
-        "active",
-        i === index
-      );
-
-    });
-
-
-  document
-    .querySelectorAll(".sub-source")
-    .forEach((tab, i) => {
-
-      tab.classList.toggle(
-        "active",
-        i === 0
-      );
-
-    });
-
-
-  updateSourceViewer();
-
-}
-
-
-/* =========================================================
-   SWITCH UNIT 3 SOURCE
-========================================================= */
-
-function switchUnit3Source(index) {
-
-  currentUnit3Source = index;
-
-  document
-    .querySelectorAll(".sub-source")
     .forEach((tab, i) => {
 
       tab.classList.toggle(
@@ -1322,30 +1234,40 @@ function switchUnit3Source(index) {
    KEYBOARD SHORTCUTS
 ========================================================= */
 
-document.addEventListener("keydown", function(e) {
+document.addEventListener(
+  "keydown",
+  function(e) {
 
-  if (
-    document
-      .getElementById("page-slides")
-      .classList
-      .contains("active")
-  ) {
+    if (
+      document
+        .getElementById("page-slides")
+        .classList
+        .contains("active")
+    ) {
 
-    if (e.key === "1") {
-      switchUnit(0);
-    }
+      if (e.key === "1") {
 
-    if (e.key === "2") {
-      switchUnit(1);
-    }
+        switchUnit(0);
 
-    if (e.key === "3") {
-      switchUnit(2);
+      }
+
+      if (e.key === "2") {
+
+        switchUnit(1);
+
+      }
+
+      if (e.key === "3") {
+
+        switchUnit(2);
+
+      }
+
     }
 
   }
+);
 
-});
 
 
 /* =========================================================
