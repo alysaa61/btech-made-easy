@@ -166,16 +166,16 @@ body::before {
 /* ================= SLIDES ================= */
 
 .viewer-wrap {
-  max-width:1300px;
+  max-width:1400px;
   margin:0 auto;
-  padding:1.5rem;
+  padding:1rem 1.25rem;
 }
 
 .unit-tabs {
   display:flex;
-  gap:8px;
-  margin-bottom:1.5rem;
-  flex-wrap:wrap;
+  align-items:center;
+  gap:4px;
+  flex-shrink:0;
 }
 
 .unit-tab {
@@ -223,53 +223,17 @@ body::before {
 /* ================= SOURCE VIEWER ================= */
 
 .source-stage {
+  width:100%;
   background:var(--bg2);
   border:1px solid var(--border);
   border-radius:12px;
   overflow:hidden;
 }
 
-.source-header {
-  padding:1rem 1.5rem;
-
-  border-bottom:1px solid var(--border);
-
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:1rem;
-}
-
-.source-title {
-  font-family:'Playfair Display',serif;
-  font-size:1.25rem;
-}
-
-.source-subtitle {
-  font-size:9px;
-  color:var(--white3);
-  margin-top:4px;
-  letter-spacing:.05em;
-}
-
-.source-open {
-  font-size:9px;
-  color:var(--gold);
-  text-decoration:none;
-
-  padding:7px 12px;
-
-  border:1px solid var(--gold-border);
-  border-radius:4px;
-}
-
-.source-open:hover {
-  background:var(--gold-dim);
-}
-
 .document-frame {
   width:100%;
-  height:720px;
+  height:calc(100vh - 90px);
+  min-height:650px;
   border:none;
   display:block;
   background:#111;
@@ -725,21 +689,23 @@ body::before {
   }
 
   .document-frame {
-    height:600px;
+    height:calc(100vh - 150px);
+    min-height:500px;
   }
 
   .qa-opts {
     grid-template-columns:1fr;
   }
 
-  .source-header {
-    flex-direction:column;
-    align-items:flex-start;
+  .unit-tabs {
+    width:100%;
+    justify-content:center;
+    order:3;
   }
 
   .unit-tab {
     flex:1;
-    min-width:100px;
+    min-width:90px;
   }
 }
 
@@ -774,6 +740,28 @@ body::before {
       </span>
     </a>
 
+    <div class="unit-tabs" aria-label="Units">
+
+      <button
+        class="unit-tab active"
+        onclick="switchUnit(0)">
+        Unit 1
+      </button>
+
+      <button
+        class="unit-tab unit2"
+        onclick="switchUnit(1)">
+        Unit 2
+      </button>
+
+      <button
+        class="unit-tab unit3"
+        onclick="switchUnit(2)">
+        Unit 3
+      </button>
+
+    </div>
+
     <div class="nav-tabs">
 
       <button
@@ -807,56 +795,9 @@ body::before {
 
   <div class="viewer-wrap">
 
-    <!-- UNIT TABS -->
-
-    <div class="unit-tabs">
-
-      <button
-        class="unit-tab active"
-        onclick="switchUnit(0)">
-        Unit 1
-      </button>
-
-      <button
-        class="unit-tab unit2"
-        onclick="switchUnit(1)">
-        Unit 2
-      </button>
-
-      <button
-        class="unit-tab unit3"
-        onclick="switchUnit(2)">
-        Unit 3
-      </button>
-
-    </div>
-
-
     <!-- DOCUMENT VIEWER -->
 
     <div class="source-stage">
-
-      <div class="source-header">
-
-        <div>
-          <div class="source-title" id="sourceTitle">
-            Unit 1
-          </div>
-
-          <div class="source-subtitle" id="sourceSubtitle">
-            Loading source material...
-          </div>
-        </div>
-
-        <a
-          id="sourceOpen"
-          class="source-open"
-          href="#"
-          target="_blank">
-          ↗ Open Source
-        </a>
-
-     
 
       <iframe
         id="documentFrame"
@@ -1115,83 +1056,17 @@ function updateSourceViewer() {
   const data =
     UNIT_DATA[currentUnit];
 
-
   const frame =
     document.getElementById(
       "documentFrame"
     );
 
-
-  const title =
-    document.getElementById(
-      "sourceTitle"
-    );
-
-
-  const subtitle =
-    document.getElementById(
-      "sourceSubtitle"
-    );
-
-
-  const open =
-    document.getElementById(
-      "sourceOpen"
-    );
-
-
   /*
-     Hide the old Unit 3 sub-selector.
-     Unit 3 is now one complete PPT.
-  */
-
-  const unit3Sources =
-    document.getElementById(
-      "unit3Sources"
-    );
-
-  if (unit3Sources) {
-
-    unit3Sources.style.display =
-      "none";
-
-  }
-
-
-  /*
-     Update heading.
-  */
-
-  title.textContent =
-    data.title;
-
-
-  subtitle.textContent =
-    data.subtitle +
-    " · PowerPoint";
-
-
-  /*
-     IMPORTANT:
-     The iframe receives the Office Viewer URL,
-     NOT the raw PPTX URL.
+     The unit selector is now in the top header.
+     The slide area contains only the PowerPoint viewer.
   */
 
   frame.src =
-    officeViewer(
-      data.file
-    );
-
-
-  /*
-     Open Source button also opens
-     the Office Viewer.
-
-     Therefore clicking it will NOT
-     immediately download the PPTX.
-  */
-
-  open.href =
     officeViewer(
       data.file
     );
